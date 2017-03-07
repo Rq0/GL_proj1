@@ -32,4 +32,4 @@
 
 
 
-6. \:interrobang: :x: :white_check_mark:
+6. \ :interrobang: :x: :white_check_mark:
