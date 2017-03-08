@@ -37,8 +37,8 @@ public class Main {
     }
 
     private static void Validator(String[] args) throws ParseException {
-        CommandLineParser parser = new GnuParser();
-
+        parser = new GnuParser();
+        //добавление всех возможных параметров
         options = new Options();
         options.addOption("login", "login", true, "Логин пользователя");
         options.addOption("pass", "password", true, "Пароль пользователя");
@@ -48,6 +48,7 @@ public class Main {
         options.addOption("de", "DateEnd", true, "Дата окончания");
         options.addOption("val", "value", true, "Объем");
         options.addOption("h", "help", false, "Cправка");
+        //получение входных параметров
         line = parser.parse(options, args);
         //Костылина на запуск без параметров или с неизвестными параметрами
         boolean NoParams;
@@ -55,10 +56,12 @@ public class Main {
                 !line.hasOption("role") && !line.hasOption("resource") &&
                 !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("value")) NoParams = true;
         else NoParams = false;
+
         if(line.hasOption("h") || NoParams) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("gl", options);
         }
+
         Users = new ArrayList();
 
         if(line.hasOption("-login") && line.hasOption("-pass")) {
@@ -76,3 +79,4 @@ public class Main {
         }
     }
 }
+
