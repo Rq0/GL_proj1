@@ -1,4 +1,5 @@
 /**
+ * Главный класс программы
  * Created by rq0 on 06.03.2017.
  */
 import com.sun.org.apache.xpath.internal.SourceTree;
@@ -24,7 +25,7 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println("Create completed");
-        System.out.println(args);
+        System.out.println(line.getArgs().toString());
         System.exit(0);
         User First = new User(1,"FirstLogin","FirstPass");
         User Sec = new User(2,"SecLogin","SecPass");
@@ -48,8 +49,13 @@ public class Main {
         options.addOption("val", "value", true, "Объем");
         options.addOption("h", "help", false, "Cправка");
         line = parser.parse(options, args);
-
-        if(line.hasOption("h")) {
+        //Костылина на запуск без параметров или с неизвестными параметрами
+        boolean NoParams;
+        if (!line.hasOption("login") && !line.hasOption("password") &&
+                !line.hasOption("role") && !line.hasOption("resource") &&
+                !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("value")) NoParams = true;
+        else NoParams = false;
+        if(line.hasOption("h") || NoParams) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("gl", options);
         }
