@@ -2,15 +2,9 @@
  * Главный класс программы
  * Created by rq0 on 06.03.2017.
  */
-import com.sun.org.apache.xpath.internal.SourceTree;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import org.apache.commons.cli.*;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
-import static java.lang.System.exit;
-import org.apache.commons.cli.*;
-
 
 
 public class Main {
@@ -18,25 +12,28 @@ public class Main {
     private static CommandLine line;
     private static ArrayList <User>Users;
     private static CommandLineParser parser;
+
     public static void main(String args[]) {
+        System.out.println("Create completed");
+        User First = new User(1,"FirstLogin","FirstPass");
+        User Sec = new User(2,"SecLogin","SecPass");
+        Users = new ArrayList<>();
+        Users.add(First);
+        Users.add(Sec);
+
+
         try {
             Validator(args);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        System.out.println("Create completed");
-        System.out.println(line.getArgs().toString());
-        System.exit(0);
-        User First = new User(1,"FirstLogin","FirstPass");
-        User Sec = new User(2,"SecLogin","SecPass");
-        System.exit(1);
-        Users.add(First);
-        Users.add(Sec);
-        GetUser(Users);
+
 
     }
 
     private static void Validator(String[] args) throws ParseException {
+        AAAService aaaService = new AAAService();
+        UserInput userInput = new UserInput();
         parser = new GnuParser();
         //добавление всех возможных параметров
         options = new Options();
@@ -51,31 +48,39 @@ public class Main {
         //получение входных параметров
         line = parser.parse(options, args);
         //Костылина на запуск без параметров или с неизвестными параметрами
-        boolean NoParams;
-        if (!line.hasOption("login") && !line.hasOption("password") &&
+        boolean NoParams = (!line.hasOption("login") && !line.hasOption("password") &&
                 !line.hasOption("role") && !line.hasOption("resource") &&
-                !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("value")) NoParams = true;
-        else NoParams = false;
-
+                !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("value"));
+//добавить exception на пустые параметры
         if(line.hasOption("h") || NoParams) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("gl", options);
+            System.exit(0);
         }
 
-        Users = new ArrayList();
+        int inputUserId = -1;
+        if(line.hasOption("login")){
+            userInput.login = line.getOptionValue("login");
+            inputUserId = aaaService.FindUser(Users,userInput);
+        }
 
+        System.out.println(inputUserId);
+
+        getUsers(Users);
+    }
+
+//Если понадобится регистрация пользователей
+    private static void addUser() {
         if(line.hasOption("-login") && line.hasOption("-pass")) {
-            User NewUser = new User(1, "FirstLogin", "FirstPass");
+            User NewUser = new User(Users.size()+1, line.getOptionValue("login"), line.getOptionValue("pass"));
             Users.add(NewUser);
         }
     }
-
-    private static void GetUser(ArrayList<User> users) {
-        for (int i = 0; i < 2; i++) {
-            System.out.println(users.get(i).login);
-        }
-        for (int i = 0; i < 2; i++) {
-            System.out.println(users.get(i).pass);
+//Вывод логинов и паролей (всех)
+    private static void getUsers(ArrayList<User> users) {
+        for (User user:
+             Users) {
+            System.out.println(user.login + user.pass);
         }
     }
 }

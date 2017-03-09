@@ -5,12 +5,12 @@ import java.util.Date;
  * Created by rq0 on 09.03.2017.
  */
 public class UserInput {
- String login,pass,res;
+    String login,pass,res;
     enum role{
            READ, WRITE, EXECUTE
     }                                 
     Date ds, de;
-    private int val;
+    int val;
 }
 
 
