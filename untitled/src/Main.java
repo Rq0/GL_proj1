@@ -79,7 +79,7 @@ enum Role{
         }
 
         if (authentification) {
-            System.out.println("Authentification compliete");
+            System.out.println("Authentication complete");
         }
 
         if(line.hasOption("res") && line.hasOption("role")){
@@ -99,6 +99,9 @@ enum Role{
                 System.exit(3);
             }
             authorisation=aaaService.CheckRole(Users,Resources,userInput);
+            if (authorisation) {
+                System.out.println("Authorisation complete");
+            }
             System.out.println(authorisation);
         }
 
