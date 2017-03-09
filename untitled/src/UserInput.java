@@ -8,7 +8,7 @@ public class UserInput {
     String login,pass,res;
     int role;
     Date ds, de;
-    int val;
+    int vol;
 }
 
 

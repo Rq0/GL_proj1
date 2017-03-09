@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class AAAService {
     public int FindUser(ArrayList<User> Users, UserInput userInput){
         int id = -1;
-        for (User User : Users) {
-            if (userInput.login.equals(User.login)) {
-                id = User.ID;
+        for (User user : Users) {
+            if (userInput.login.equals(user.login)) {
+                id = user.ID;
             }
         }
         if(id==-1){
@@ -21,25 +21,35 @@ public class AAAService {
     }
     public boolean CheckPass(ArrayList<User> Users, UserInput userInput, int id){
 
-        if (userInput.pass.equals(Users.get(id).pass)) {
-            return true;
-
-        } else {
-            System.exit(2);
-            return false;
+        for (User user :
+                Users) {
+            if(userInput.login.equals(user.login)){
+                if(userInput.pass.equals(user.pass)){
+                    return true;
+                }
+                else{
+                    System.exit(2);
+                }
+            }
         }
+        return false;
     }
     public boolean CheckRole(ArrayList<User>Users,ArrayList<Resource> Resources, UserInput userInput){
-        for (Resource Res:
+        for (Resource res:
              Resources) {
-            if(Res.path.equals(userInput.res)){
-                if(Res.user.equals(Users.get(FindUser(Users,userInput)))){
-                    if (Res.role==userInput.role)
+            if(res.path.equals(userInput.res)){
+                if(res.user.equals(Users.get(FindUser(Users,userInput)))){
+                    if (res.role==userInput.role)
                         return true;
                 }
             }
 
         }
+        System.exit(4);
+        return false;
+    }
+    public boolean GetAccount(ArrayList<User> Users, UserInput userInput){
+
         return false;
     }
 }

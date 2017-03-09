@@ -2,29 +2,35 @@
  * Главный класс программы
  * Created by rq0 on 06.03.2017.
  */
+import com.sun.javafx.scene.layout.region.Margins;
 import org.apache.commons.cli.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
 public class Main {
     private static Options options;
     private static CommandLine line;
-    private static ArrayList <User>Users;
-    private static ArrayList<Resource>Resources;
+    private static ArrayList <User> users;
+    private static ArrayList<Resource> resources;
     private static CommandLineParser parser;
+    public static ArrayList<Account> accounts;
 
     public static void main(String args[]) {
         System.out.println("Create completed");
-        User First = new User(0,"FirstLogin","FirstPass");
-        User Sec = new User(1,"SecLogin","SecPass");
-        Users = new ArrayList<>();
-        Users.add(First);
-        Users.add(Sec);
+        User first = new User(0,"FirstLogin","FirstPass");
+        User sec = new User(1,"SecLogin","SecPass");
+        users = new ArrayList<>();
+        users.add(first);
+        users.add(sec);
 
-        Resources = new ArrayList<>();
-        Resource resource = new Resource(0,"google.com",First,Role.READ.ordinal());
-        Resources.add(resource);
+        resources = new ArrayList<>();
+        Resource resource = new Resource(0,"google.com",first,Role.READ.ordinal());
+        resources.add(resource);
+
+        accounts = new ArrayList<>();
+
 
         try {
             Validator(args);
@@ -38,7 +44,7 @@ enum Role{
         READ, WRITE, EXECUTE
 }
     private static void Validator(String[] args) throws ParseException {
-        boolean authentification = false, authorisation, accounting=false;
+        boolean authentification = false, authorisation, accounting;
         AAAService aaaService = new AAAService();
         UserInput userInput = new UserInput();
         parser = new GnuParser();
@@ -50,7 +56,7 @@ enum Role{
         options.addOption("res", "resource", true, "Адрес ресурса");
         options.addOption("ds", "DateStart", true, "Дата начала");
         options.addOption("de", "DateEnd", true, "Дата окончания");
-        options.addOption("val", "value", true, "Объем");
+        options.addOption("vol", "volume", true, "Объем");
         options.addOption("h", "help", false, "Cправка");
         //получение входных параметров
         line = parser.parse(options, args);
@@ -69,13 +75,13 @@ enum Role{
         int inputUserId = -1;
         if(line.hasOption("login")){
             userInput.login = line.getOptionValue("login");
-            inputUserId = aaaService.FindUser(Users,userInput);
+            inputUserId = aaaService.FindUser(users,userInput);
         }
 
         if(line.hasOption("pass")){
            userInput.pass = line.getOptionValue("pass");
            //отправляем id, хранящийся у пользователя, а используем как номер в списке, может сломаться
-           authentification = aaaService.CheckPass(Users,userInput,inputUserId);
+           authentification = aaaService.CheckPass(users,userInput,inputUserId);
         }
 
         if (authentification) {
@@ -98,27 +104,44 @@ enum Role{
             else {
                 System.exit(3);
             }
-            authorisation=aaaService.CheckRole(Users,Resources,userInput);
+            authorisation=aaaService.CheckRole(users, resources,userInput);
             if (authorisation) {
                 System.out.println("Authorisation complete");
             }
-            System.out.println(authorisation);
         }
-
-        getUsers(Users);
+//должно быть не тут, исправить
+        if(line.hasOption("ds")&&line.hasOption("de")&&line.hasOption("vol")){
+            userInput.vol=Integer.parseInt(line.getOptionValue("vol"));
+            SimpleDateFormat newDate = new SimpleDateFormat("yyyy-mm-dd"){{
+                setLenient(false);
+            }};
+            try {
+                userInput.ds = newDate.parse(line.getOptionValue("ds"));
+                userInput.de = newDate.parse(line.getOptionValue("de"));
+            } catch (Exception e){
+            }
+            accounting = aaaService.GetAccount(users,userInput);
+            Account account = new Account(aaaService.FindUser(users,userInput),userInput.ds,userInput.de,userInput.vol);
+            accounts.add(account);
+            if (accounting) {
+                System.out.println("Accounting complete");
+            }
+        }
+        //Account account = new Account(0, 2016-01-07, 2016-01-07,500);
+        getUsers(users);
     }
 
 //Если понадобится регистрация пользователей
     private static void addUser() {
         if(line.hasOption("-login") && line.hasOption("-pass")) {
-            User NewUser = new User(Users.size()+1, line.getOptionValue("login"), line.getOptionValue("pass"));
-            Users.add(NewUser);
+            User NewUser = new User(users.size()+1, line.getOptionValue("login"), line.getOptionValue("pass"));
+            users.add(NewUser);
         }
     }
 //Вывод логинов и паролей (всех)
     private static void getUsers(ArrayList<User> users) {
         for (User user:
-             Users) {
+                Main.users) {
             System.out.println(user.login + user.pass);
         }
     }
