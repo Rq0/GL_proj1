@@ -1,3 +1,4 @@
+import javax.annotation.*;
 import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 
@@ -27,5 +28,18 @@ public class AAAService {
             System.exit(2);
             return false;
         }
+    }
+    public boolean CheckRole(ArrayList<User>Users,ArrayList<Resource> Resources, UserInput userInput){
+        for (Resource Res:
+             Resources) {
+            if(Res.path.equals(userInput.res)){
+                if(Res.user.equals(Users.get(FindUser(Users,userInput)))){
+                    if (Res.role==userInput.role)
+                        return true;
+                }
+            }
+
+        }
+        return false;
     }
 }

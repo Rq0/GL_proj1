@@ -11,6 +11,7 @@ public class Main {
     private static Options options;
     private static CommandLine line;
     private static ArrayList <User>Users;
+    private static ArrayList<Resource>Resources;
     private static CommandLineParser parser;
 
     public static void main(String args[]) {
@@ -21,7 +22,10 @@ public class Main {
         Users.add(First);
         Users.add(Sec);
 
-        Resource resource = new Resource(0,"google.com",First,3);
+        Resources = new ArrayList<>();
+        Resource resource = new Resource(0,"google.com",First,Role.READ.ordinal());
+        Resources.add(resource);
+
         try {
             Validator(args);
         } catch (ParseException e) {
@@ -34,7 +38,7 @@ enum Role{
         READ, WRITE, EXECUTE
 }
     private static void Validator(String[] args) throws ParseException {
-        boolean authentification=false,authorisation=false, accounting=false;
+        boolean authentification = false, authorisation, accounting=false;
         AAAService aaaService = new AAAService();
         UserInput userInput = new UserInput();
         parser = new GnuParser();
@@ -55,6 +59,7 @@ enum Role{
                 !line.hasOption("role") && !line.hasOption("resource") &&
                 !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("value"));
 //добавить exception на пустые параметры
+
         if(line.hasOption("h") || NoParams) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("gl", options);
@@ -66,14 +71,36 @@ enum Role{
             userInput.login = line.getOptionValue("login");
             inputUserId = aaaService.FindUser(Users,userInput);
         }
-        System.out.println(inputUserId);
 
         if(line.hasOption("pass")){
            userInput.pass = line.getOptionValue("pass");
            //отправляем id, хранящийся у пользователя, а используем как номер в списке, может сломаться
            authentification = aaaService.CheckPass(Users,userInput,inputUserId);
         }
-        System.out.println(authentification);
+
+        if (authentification) {
+            System.out.println("Authentification compliete");
+        }
+
+        if(line.hasOption("res") && line.hasOption("role")){
+            userInput.res = line.getOptionValue("res");
+            //костыли с ролью(отменяются, придумать как заменить на свич)
+
+            if(Role.EXECUTE.toString().equals(line.getOptionValue("role"))){
+                userInput.role = 2;
+            }
+            else if(Role.WRITE.toString().equals(line.getOptionValue("role"))){
+                userInput.role = 1;
+            }
+            else if(Role.READ.toString().equals(line.getOptionValue("role"))){
+                userInput.role = 0;
+            }
+            else {
+                System.exit(3);
+            }
+            authorisation=aaaService.CheckRole(Users,Resources,userInput);
+            System.out.println(authorisation);
+        }
 
         getUsers(Users);
     }
