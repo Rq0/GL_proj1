@@ -15,8 +15,8 @@ public class Main {
 
     public static void main(String args[]) {
         System.out.println("Create completed");
-        User First = new User(1,"FirstLogin","FirstPass");
-        User Sec = new User(2,"SecLogin","SecPass");
+        User First = new User(0,"FirstLogin","FirstPass");
+        User Sec = new User(1,"SecLogin","SecPass");
         Users = new ArrayList<>();
         Users.add(First);
         Users.add(Sec);
@@ -32,6 +32,7 @@ public class Main {
     }
 
     private static void Validator(String[] args) throws ParseException {
+        boolean authentification=false,authorisation=false, accounting=false;
         AAAService aaaService = new AAAService();
         UserInput userInput = new UserInput();
         parser = new GnuParser();
@@ -63,8 +64,14 @@ public class Main {
             userInput.login = line.getOptionValue("login");
             inputUserId = aaaService.FindUser(Users,userInput);
         }
-
         System.out.println(inputUserId);
+
+        if(line.hasOption("pass")){
+           userInput.pass = line.getOptionValue("pass");
+           //отправляем id, хранящийся у пользователя, а используем как номер в списке, может сломаться
+           authentification = aaaService.CheckPass(Users,userInput,inputUserId);
+        }
+        System.out.println(authentification);
 
         getUsers(Users);
     }

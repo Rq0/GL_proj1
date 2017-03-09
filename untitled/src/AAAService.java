@@ -20,15 +20,12 @@ public class AAAService {
     }
     public boolean CheckPass(ArrayList<User> Users, UserInput userInput, int id){
 
+        if (userInput.pass.equals(Users.get(id).pass)) {
+            return true;
 
-        for (int i = 0; i < Users.size(); i++) {
-            if(Users.get(i).ID.compareTo(id)==0) {
-                id = i;
-            }
-        }
-        if (id==-1) {
+        } else {
             System.exit(2);
+            return false;
         }
-        return userInput.pass.equals(Users.get(id).pass);
     }
 }
