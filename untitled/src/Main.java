@@ -21,7 +21,7 @@ public class Main {
         Users.add(First);
         Users.add(Sec);
 
-
+        Resource resource = new Resource(0,"google.com",First,3);
         try {
             Validator(args);
         } catch (ParseException e) {
@@ -30,7 +30,9 @@ public class Main {
 
 
     }
-
+enum Role{
+        READ, WRITE, EXECUTE
+}
     private static void Validator(String[] args) throws ParseException {
         boolean authentification=false,authorisation=false, accounting=false;
         AAAService aaaService = new AAAService();

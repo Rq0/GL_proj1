@@ -6,9 +6,7 @@ import java.util.Date;
  */
 public class UserInput {
     String login,pass,res;
-    enum role{
-           READ, WRITE, EXECUTE
-    }                                 
+    int role;
     Date ds, de;
     int val;
 }
