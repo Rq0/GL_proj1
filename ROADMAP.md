@@ -14,14 +14,14 @@
   5. Создать справочник ролей (R,W,E) :white_check_mark:
   6. Создать класс Ресурс (Путь, Пользователь, id, Роль) :white_check_mark:
   7. Добавить коллекцию Ресурс :white_check_mark:
-3. Авторизация
-  1. Создать класс Validator :white_check_mark: :interrobang:
-    1. Создать класс UserInput :white_check_mark: :interrobang:
+3. Авторизация :white_check_mark:
+  1. Создать класс Validator :white_check_mark:
+    1. Создать класс UserInput :white_check_mark:
     2. Разложить вход. пар-ры в объект UserInput :white_check_mark:
 4. Аккаунтинг:white_check_mark:
-  1. isDateValid(строка ds, de) :white_check_mark: :interrobang:
+  1. isDateValid(строка ds, de) :white_check_mark: 
       1. tryGetDate :white_check_mark: 
-  2. isVolValid(строка Vol) :white_check_mark: :interrobang:
+  2. isVolValid(строка Vol) :white_check_mark:
       1. tryGetVol :white_check_mark:
   3. Создать класс Accounting :white_check_mark:
     * даты :white_check_mark:
