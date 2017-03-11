@@ -2,10 +2,9 @@
  * Главный класс программы
  * Created by rq0 on 06.03.2017.
  */
-import com.sun.javafx.scene.layout.region.Margins;
+
 import org.apache.commons.cli.*;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
@@ -44,7 +43,7 @@ enum Role{
         READ, WRITE, EXECUTE
 }
     private static void Validator(String[] args) throws ParseException {
-        boolean authentification = false, authorisation, accounting;
+        boolean authentication = false, authorisation=false, accounting=false;
         AAAService aaaService = new AAAService();
         UserInput userInput = new UserInput();
         parser = new GnuParser();
@@ -63,7 +62,7 @@ enum Role{
         //Костылина на запуск без параметров или с неизвестными параметрами
         boolean NoParams = (!line.hasOption("login") && !line.hasOption("password") &&
                 !line.hasOption("role") && !line.hasOption("resource") &&
-                !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("value"));
+                !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("vol"));
 //добавить exception на пустые параметры
 
         if(line.hasOption("h") || NoParams) {
@@ -81,10 +80,10 @@ enum Role{
         if(line.hasOption("pass")){
            userInput.pass = line.getOptionValue("pass");
            //отправляем id, хранящийся у пользователя, а используем как номер в списке, может сломаться
-           authentification = aaaService.CheckPass(users,userInput,inputUserId);
+           authentication = aaaService.CheckPass(users,userInput,inputUserId);
         }
 
-        if (authentification) {
+        if (authentication) {
             System.out.println("Authentication complete");
         }
 
@@ -93,13 +92,13 @@ enum Role{
             //костыли с ролью(отменяются, придумать как заменить на свич)
 
             if(Role.EXECUTE.toString().equals(line.getOptionValue("role"))){
-                userInput.role = 2;
+                userInput.role="2";
             }
             else if(Role.WRITE.toString().equals(line.getOptionValue("role"))){
-                userInput.role = 1;
+                userInput.role="1";
             }
             else if(Role.READ.toString().equals(line.getOptionValue("role"))){
-                userInput.role = 0;
+                userInput.role="0";
             }
             else {
                 System.exit(3);
@@ -109,26 +108,19 @@ enum Role{
                 System.out.println("Authorisation complete");
             }
         }
-//должно быть не тут, исправить
-        if(line.hasOption("ds")&&line.hasOption("de")&&line.hasOption("vol")){
-            userInput.vol=Integer.parseInt(line.getOptionValue("vol"));
-            SimpleDateFormat newDate = new SimpleDateFormat("yyyy-mm-dd"){{
-                setLenient(false);
-            }};
-            try {
-                userInput.ds = newDate.parse(line.getOptionValue("ds"));
-                userInput.de = newDate.parse(line.getOptionValue("de"));
-            } catch (Exception e){
-            }
-            accounting = aaaService.GetAccount(users,userInput);
-            Account account = new Account(aaaService.FindUser(users,userInput),userInput.ds,userInput.de,userInput.vol);
-            accounts.add(account);
+
+        if(line.hasOption("ds")&&line.hasOption("de")&&line.hasOption("vol")&&(authorisation)){
+            userInput.vol=line.getOptionValue("vol");
+            userInput.ds=line.getOptionValue("ds");
+            userInput.de = line.getOptionValue("de");
+
+            accounting = aaaService.AddAccount(users,userInput);
+
             if (accounting) {
                 System.out.println("Accounting complete");
             }
+            System.out.println(aaaService.GetAccounts());
         }
-        //Account account = new Account(0, 2016-01-07, 2016-01-07,500);
-        getUsers(users);
     }
 
 //Если понадобится регистрация пользователей
@@ -139,7 +131,7 @@ enum Role{
         }
     }
 //Вывод логинов и паролей (всех)
-    private static void getUsers(ArrayList<User> users) {
+private static void getUsers(ArrayList<User> users) {
         for (User user:
                 Main.users) {
             System.out.println(user.login + user.pass);

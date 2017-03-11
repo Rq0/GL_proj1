@@ -1,6 +1,7 @@
 import javax.jws.soap.SOAPBinding;
 
 /**
+ * Класс ресурсов
  * Created by rq0 on 09.03.2017.
  */
 public class Resource {
@@ -13,10 +14,5 @@ public class Resource {
         this.path = path;
         this.user = user;
         this.role = role;
-    }
-    public Resource(){
-        this.id = -5;
-        this.path = "DefaultPath";
-        this.role = 0;
     }
 }
