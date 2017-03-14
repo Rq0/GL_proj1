@@ -1,6 +1,8 @@
 import org.apache.commons.lang3.RandomStringUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 /**
@@ -9,51 +11,38 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
  * Created by rq0 on 09.03.2017.
  */
 class AAAService {
-    private static ArrayList<User> users = new ArrayList<>();
-    private static ArrayList<Resource> resources = new ArrayList<>();
-    private static ArrayList<Account> accounts = new ArrayList<>();
+    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<Resource> resources = new ArrayList<>();
+    private ArrayList<Account> accounts = new ArrayList<>();
 
     //Временная необходимость(наверно)
-    void AddUser(int id, String login, String pass, String salt) {
-        User user = new User(id, login, pass, salt);
-        addHash(user);
-        users.add(user.id, user);
+    void AddUser(int id, String login, String pass) {
+        String salt = addSalt();
+        users.add(new User(id, login, addHash(pass, salt), salt));
     }
 
     User GetUser(int id) {
         return users.get(id);
     }
 
-    String GetUsers() {
-        String out = "";
-        for (User user :
-                users) {
-            out += String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass);
-        }
-        return out;
-    }
-
     //correct
     int FindUser(UserInput userInput) {
-        Integer id = null;
+
         for (User user : users) {
             if (userInput.login.equals(user.login)) {
-                id = user.id;
+                return user.id;
             }
         }
-        if (id == null) {
-            System.exit(1);
-        }
-        return id;
+        System.exit(1);
+        return -1;
     }
 
-    String addSalt() {
+    private String addSalt() {
         return RandomStringUtils.randomAscii(8);
-
     }
 
-    private void addHash(User user) {
-        user.pass = md5Hex(md5Hex(user.pass) + user.salt);
+    private String addHash(String password, String salt) {
+        return md5Hex(md5Hex(password) + salt);
     }
 
     boolean CheckPass(UserInput userInput) {
@@ -76,14 +65,6 @@ class AAAService {
         resources.add(resource);
     }
 
-    String GetResources() {
-        String out = "";
-        for (Resource resource :
-                resources) {
-            out += String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id);
-        }
-        return out;
-    }
 
     //проверка доступа к ресурсу
     boolean CheckRole(UserInput userInput) {
@@ -119,14 +100,12 @@ class AAAService {
             account.ds = newDate.parse(userInput.ds);
             account.de = newDate.parse(userInput.de);
         } catch (Exception e) {
-            System.out.println("Unreachable date format");
             System.exit(5);
             return false;
         }
         try {
             account.vol = Integer.parseInt(userInput.vol);
         } catch (Exception e) {
-            System.out.println("Unreachable volume format");
             System.exit(5);
             return false;
         }
@@ -134,14 +113,6 @@ class AAAService {
         return true;
     }
 
-    String GetAccounts() {
-        String out = "";
-        for (Account account :
-                accounts) {
-            out += String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account.userID, account.ds, account.de, account.vol);
-        }
-        return out;
-    }
 
     protected enum Role {
         READ, WRITE, EXECUTE
