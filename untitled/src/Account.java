@@ -4,14 +4,13 @@ import java.util.Date;
  * Класс аккантов
  * Created by rq0 on 10.03.2017.
  */
-public class Account {
-    Date ds, de;
-    int userID, vol;
+class Account {
+    Date ds;
+    Date de;
+    Integer userID;
+    Integer vol;
 
-    public Account(int userID, Date ds, Date de, int vol) {
+    Account(int userID) {
         this.userID = userID;
-        this.ds = ds;
-        this.de = de;
-        this.vol = vol;
     }
 }

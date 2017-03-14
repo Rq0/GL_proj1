@@ -1,9 +1,6 @@
 import org.apache.commons.lang3.RandomStringUtils;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 /**
@@ -11,23 +8,23 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
  * Весь хлам, что не попал никуда
  * Created by rq0 on 09.03.2017.
  */
-public class AAAService {
+class AAAService {
     private static ArrayList<User> users = new ArrayList<>();
     private static ArrayList<Resource> resources = new ArrayList<>();
     private static ArrayList<Account> accounts = new ArrayList<>();
 
     //Временная необходимость(наверно)
-    protected void AddUser(int id, String login, String pass, String salt) {
+    void AddUser(int id, String login, String pass, String salt) {
         User user = new User(id, login, pass, salt);
         addHash(user);
         users.add(user.id, user);
     }
 
-    protected User GetUser(int id) {
+    User GetUser(int id) {
         return users.get(id);
     }
 
-    protected String GetUsers() {
+    String GetUsers() {
         String out = "";
         for (User user :
                 users) {
@@ -36,14 +33,15 @@ public class AAAService {
         return out;
     }
 
-    protected int FindUser(UserInput userInput) {
-        int id = -1;
+    //correct
+    int FindUser(UserInput userInput) {
+        Integer id = null;
         for (User user : users) {
             if (userInput.login.equals(user.login)) {
                 id = user.id;
             }
         }
-        if (id == -1) {
+        if (id == null) {
             System.exit(1);
         }
         return id;
@@ -54,11 +52,11 @@ public class AAAService {
 
     }
 
-    void addHash(User user) {
+    private void addHash(User user) {
         user.pass = md5Hex(md5Hex(user.pass) + user.salt);
     }
 
-    protected boolean CheckPass(UserInput userInput) {
+    boolean CheckPass(UserInput userInput) {
 
         for (User user :
                 users) {
@@ -73,12 +71,12 @@ public class AAAService {
         return false;
     }
 
-    protected void AddResource(int id, String path, User user, int role) {
+    void AddResource(int id, String path, User user, int role) {
         Resource resource = new Resource(id, path, user, role);
         resources.add(resource);
     }
 
-    protected String GetResources() {
+    String GetResources() {
         String out = "";
         for (Resource resource :
                 resources) {
@@ -88,17 +86,12 @@ public class AAAService {
     }
 
     //проверка доступа к ресурсу
-    protected boolean CheckRole(UserInput userInput) {
+    boolean CheckRole(UserInput userInput) {
         for (Resource res :
                 resources) {
-
             if (res.user.equals(users.get(FindUser(userInput)))) {
                 if (res.role == Integer.parseInt(userInput.role)) {
-                    if (res.path.equals(userInput.res)) {
-                        return true;
-                    } else {
-                        return ExtendRole(userInput);
-                    }
+                    return res.path.equals(userInput.res) || ExtendRole(userInput);
                 }
             }
         }
@@ -106,8 +99,9 @@ public class AAAService {
     }
 
     //наследование роли для дочерних ресурсов
-    protected boolean ExtendRole(UserInput userInput) {
+    private boolean ExtendRole(UserInput userInput) {
         String parentResource = userInput.res;
+        //idea ругается, но тут нужен именно другой input
         UserInput newInput = userInput;
         while (parentResource.contains(".")) {
             parentResource = userInput.res.substring(0, userInput.res.lastIndexOf('.'));
@@ -120,26 +114,31 @@ public class AAAService {
         return false;
     }
 
-    protected boolean AddAccount(UserInput userInput) {
-        Date ds, de;
-        int vol;
+    boolean AddAccount(UserInput userInput) {
+        Account account = new Account(FindUser(userInput));
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-mm-dd") {{
             setLenient(false);
         }};
         try {
-            ds = newDate.parse(userInput.ds);
-            de = newDate.parse(userInput.de);
-            vol = Integer.parseInt(userInput.vol);
-            Account account = new Account(FindUser(userInput), ds, de, vol);
-            accounts.add(account);
-            return true;
-        } catch (Exception ignored) {
+            account.ds = newDate.parse(userInput.ds);
+            account.de = newDate.parse(userInput.de);
+        } catch (Exception e) {
+            System.out.println("Unreachable date format");
+            System.exit(5);
+            return false;
         }
-        System.exit(5);
-        return false;
+        try {
+            account.vol = Integer.parseInt(userInput.vol);
+        } catch (Exception e) {
+            System.out.println("Unreachable volume format");
+            System.exit(5);
+            return false;
+        }
+        accounts.add(account);
+        return true;
     }
 
-    protected String GetAccounts() {
+    String GetAccounts() {
         String out = "";
         for (Account account :
                 accounts) {

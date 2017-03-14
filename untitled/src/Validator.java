@@ -1,24 +1,19 @@
-/**
- * Класс разбирающий входные параметры
- * Created by rq0 on 11.03.2017.
- */
-
 import org.apache.commons.cli.*;
 
 class Validator {
 
-    private static Options options;
     private static CommandLine line;
-    private static CommandLineParser parser;
 
     static void Validate(String[] args) throws ParseException {
         AAAService aaaService = new AAAService();
-        boolean authentication = false, authorisation = false, accounting = false;
+        boolean authentication = false;
+        boolean authorisation = false;
+        boolean accounting;
         UserInput userInput = new UserInput();
-        parser = new GnuParser();
+        CommandLineParser parser = new GnuParser();
 
         //добавление всех возможных параметров
-        options = new Options();
+        Options options = new Options();
         options.addOption("login", "login", true, "Логин пользователя");
         options.addOption("pass", "password", true, "Пароль пользователя");
         options.addOption("role", "role", true, "Роль пользователя на выбранном ресурсе");
@@ -29,8 +24,14 @@ class Validator {
         options.addOption("h", "help", false, "Cправка");
 
         //получение входных параметров
-        line = parser.parse(options, args);
-        //Костылина на запуск без параметров или с неизвестными параметрами
+        try {
+            line = parser.parse(options, args);
+        } catch (Exception e) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("gl", options);
+            System.exit(0);
+        }
+        //Костылина на запуск без параметров
         boolean NoParams = (!line.hasOption("login") && !line.hasOption("password") &&
                 !line.hasOption("role") && !line.hasOption("resource") &&
                 !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("vol"));
@@ -41,7 +42,6 @@ class Validator {
             System.exit(0);
         }
 
-
         if (line.hasOption("login")) {
             userInput.login = line.getOptionValue("login");
             aaaService.FindUser(userInput);
@@ -50,11 +50,11 @@ class Validator {
                 userInput.pass = line.getOptionValue("pass");
                 authentication = aaaService.CheckPass(userInput);
             }
+            if (authentication) {
+                System.out.println("Authentication complete");
+            }
         }
 
-        if (authentication) {
-            System.out.println("Authentication complete");
-        }
 
         if (line.hasOption("res") && line.hasOption("role") && authentication) {
             userInput.res = line.getOptionValue("res");
