@@ -15,7 +15,6 @@ class AAAService {
     private ArrayList<Resource> resources = new ArrayList<>();
     private ArrayList<Account> accounts = new ArrayList<>();
 
-    //Временная необходимость(наверно)
     void AddUser(int id, String login, String pass) {
         String salt = addSalt();
         users.add(new User(id, login, addHash(pass, salt), salt));
@@ -25,7 +24,6 @@ class AAAService {
         return users.get(id);
     }
 
-    //correct
     int FindUser(UserInput userInput) {
 
         for (User user : users) {
@@ -65,7 +63,11 @@ class AAAService {
     }
 
 
-    //проверка доступа к ресурсу
+    /**
+     * проверка доступа к ресурсу
+     * @param userInput входные параметры приложения
+     * @return Нашел ли нужный ресурс с ролью
+     */
     boolean CheckRole(UserInput userInput) {
         for (Resource res :
                 resources) {
@@ -78,7 +80,11 @@ class AAAService {
         return false;
     }
 
-    //наследование роли для дочерних ресурсов
+    /**
+     * наследование роли для дочерних ресурсов
+     * @param userInput входные параметры приложения
+     * @return Есть ли нужная роль у родителя
+     */
     private boolean ExtendRole(UserInput userInput) {
         while (userInput.res.contains(".")) {
             userInput.res = userInput.res.substring(0, userInput.res.lastIndexOf('.'));

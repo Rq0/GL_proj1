@@ -10,7 +10,6 @@ class Validator {
         UserInput userInput = new UserInput();
         CommandLineParser parser = new DefaultParser();
 
-        //добавление всех возможных параметров
         Options options = new Options();
         options.addOption("login", "login", true, "Логин пользователя");
         options.addOption("pass", "password", true, "Пароль пользователя");
@@ -21,7 +20,6 @@ class Validator {
         options.addOption("vol", "volume", true, "Объем");
         options.addOption("h", "help", false, "Cправка");
 
-        //получение входных параметров
         try {
             line = parser.parse(options, args);
         } catch (Exception e) {
@@ -49,7 +47,6 @@ class Validator {
 
         if (line.hasOption("res") && line.hasOption("role") && authentication) {
             userInput.res = line.getOptionValue("res");
-            //костыли с ролью(отменяются, придумать как заменить на свич)
 
             if (AAAService.Role.EXECUTE.toString().equals(line.getOptionValue("role"))) {
                 userInput.role = "2";
