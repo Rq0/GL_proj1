@@ -90,26 +90,38 @@ class AAAService {
         return false;
     }
 
-    boolean AddAccount(UserInput userInput) {
-        Account account = new Account(FindUser(userInput));
+    private boolean isDateValid(Account account, String ds, String de) {
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-mm-dd") {{
             setLenient(false);
         }};
         try {
-            account.ds = newDate.parse(userInput.ds);
-            account.de = newDate.parse(userInput.de);
+            account.ds = newDate.parse(ds);
+            account.de = newDate.parse(de);
+            return true;
         } catch (Exception e) {
             System.exit(5);
             return false;
         }
+    }
+
+    private boolean isVolValid(Account account, String vol) {
         try {
-            account.vol = Integer.parseInt(userInput.vol);
+            account.vol = Integer.parseInt(vol);
+            return true;
         } catch (Exception e) {
             System.exit(5);
             return false;
         }
-        accounts.add(account);
-        return true;
+    }
+
+    boolean AddAccount(UserInput userInput) {
+        Account account = new Account(FindUser(userInput));
+        if (isDateValid(account, userInput.ds, userInput.de) && isVolValid(account, userInput.vol)) {
+            accounts.add(account);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
