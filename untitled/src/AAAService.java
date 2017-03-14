@@ -100,13 +100,9 @@ class AAAService {
 
     //наследование роли для дочерних ресурсов
     private boolean ExtendRole(UserInput userInput) {
-        String parentResource = userInput.res;
-        //idea ругается, но тут нужен именно другой input
-        UserInput newInput = userInput;
-        while (parentResource.contains(".")) {
-            parentResource = userInput.res.substring(0, userInput.res.lastIndexOf('.'));
-            newInput.res = parentResource;
-            if (CheckRole(newInput)) {
+        while (userInput.res.contains(".")) {
+            userInput.res = userInput.res.substring(0, userInput.res.lastIndexOf('.'));
+            if (CheckRole(userInput)) {
                 return true;
             }
         }
