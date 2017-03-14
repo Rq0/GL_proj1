@@ -24,6 +24,15 @@ class AAAService {
         return users.get(id);
     }
 
+    String GetUsers() {
+        String out = "";
+        for (User user : users) {
+            out += String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass);
+        }
+        return out;
+    }
+
+    //correct
     int FindUser(UserInput userInput) {
 
         for (User user : users) {
@@ -58,13 +67,22 @@ class AAAService {
         return false;
     }
 
-    void AddResource(int id, String path, User user, int role) {
+    void AddResource(int id, String path, User user, Role role) {
         resources.add(new Resource(id, path, user, role));
+    }
+
+    String GetResources() {
+        StringBuilder out = new StringBuilder();
+        for (Resource resource : resources) {
+            out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
+        }
+        return out.toString();
     }
 
 
     /**
      * проверка доступа к ресурсу
+     *
      * @param userInput входные параметры приложения
      * @return Нашел ли нужный ресурс с ролью
      */
@@ -72,7 +90,7 @@ class AAAService {
         for (Resource res :
                 resources) {
             if (res.user.equals(users.get(FindUser(userInput)))) {
-                if (res.role == Integer.parseInt(userInput.role)) {
+                if (res.role.equals(userInput.role)) {
                     return res.path.equals(userInput.res) || ExtendRole(userInput);
                 }
             }
@@ -82,6 +100,7 @@ class AAAService {
 
     /**
      * наследование роли для дочерних ресурсов
+     *
      * @param userInput входные параметры приложения
      * @return Есть ли нужная роль у родителя
      */
@@ -105,6 +124,7 @@ class AAAService {
             account.de = newDate.parse(de);
             return true;
         } catch (Exception e) {
+            System.out.println("Unreachable date format");
             System.exit(5);
             return false;
         }
@@ -115,6 +135,7 @@ class AAAService {
             account.vol = Integer.parseInt(vol);
             return true;
         } catch (Exception e) {
+            System.out.println("Unreachable volume format");
             System.exit(5);
             return false;
         }
@@ -131,7 +152,4 @@ class AAAService {
     }
 
 
-    protected enum Role {
-        READ, WRITE, EXECUTE
-    }
 }

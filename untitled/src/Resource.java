@@ -1,10 +1,10 @@
 class Resource {
     String path;
-    Integer role;
+    Role role;
     User user;
     private int resourceID;
 
-    Resource(int resourceID, String path, User user, int role) {
+    Resource(int resourceID, String path, User user, Role role) {
         this.resourceID = resourceID;
         this.path = path;
         this.user = user;

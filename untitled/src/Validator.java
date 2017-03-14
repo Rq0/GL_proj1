@@ -48,12 +48,13 @@ class Validator {
         if (line.hasOption("res") && line.hasOption("role") && authentication) {
             userInput.res = line.getOptionValue("res");
 
-            if (AAAService.Role.EXECUTE.toString().equals(line.getOptionValue("role"))) {
-                userInput.role = "2";
-            } else if (AAAService.Role.WRITE.toString().equals(line.getOptionValue("role"))) {
-                userInput.role = "1";
-            } else if (AAAService.Role.READ.toString().equals(line.getOptionValue("role"))) {
-                userInput.role = "0";
+
+            if (Role.EXECUTE.toString().equals(line.getOptionValue("role"))) {
+                userInput.role = Role.EXECUTE;
+            } else if (Role.WRITE.toString().equals(line.getOptionValue("role"))) {
+                userInput.role = Role.WRITE;
+            } else if (Role.READ.toString().equals(line.getOptionValue("role"))) {
+                userInput.role = Role.READ;
             } else {
                 System.exit(3);
             }

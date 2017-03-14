@@ -6,7 +6,7 @@ class UserInput {
     String login;
     String pass;
     String res;
-    String role;
+    Role role;
     String ds;
     String de;
     String vol;
