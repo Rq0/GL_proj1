@@ -61,8 +61,7 @@ class AAAService {
     }
 
     void AddResource(int id, String path, User user, int role) {
-        Resource resource = new Resource(id, path, user, role);
-        resources.add(resource);
+        resources.add(new Resource(id, path, user, role));
     }
 
 
