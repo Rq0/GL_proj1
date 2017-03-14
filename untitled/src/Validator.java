@@ -29,12 +29,8 @@ class Validator {
             formatter.printHelp("gl", options);
             System.exit(0);
         }
-        //Костылина на запуск без параметров
-        boolean NoParams = (!line.hasOption("login") && !line.hasOption("password") &&
-                !line.hasOption("role") && !line.hasOption("resource") &&
-                !line.hasOption("DateStart") && !line.hasOption("DateEnd") && !line.hasOption("vol"));
 
-        if (line.hasOption("h") || NoParams) {
+        if (line.hasOption("h") || line.getOptions().length==0) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("gl", options);
             System.exit(0);
