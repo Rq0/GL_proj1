@@ -5,35 +5,51 @@ import java.util.ArrayList;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
-/**
- * AAAService
- * Весь хлам, что не попал никуда
- * Created by rq0 on 09.03.2017.
- */
+
 class AAAService {
+
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Resource> resources = new ArrayList<>();
     private ArrayList<Account> accounts = new ArrayList<>();
 
-    void AddUser(int id, String login, String pass) {
+    User getUser(int id) {
+        return users.get(id);
+    }
+
+
+    String getUsers() {
+        StringBuilder out = new StringBuilder();
+        for (User user : users) {
+            out.append(String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass));
+        }
+        return out.toString();
+    }
+
+
+    String getResources() {
+        StringBuilder out = new StringBuilder();
+        for (Resource resource : resources) {
+            out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
+        }
+        return out.toString();
+    }
+
+    String getAccounts() {
+        StringBuilder out = new StringBuilder();
+        for (Account account : accounts) {
+            out.append(String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account.userID, account.ds, account.de, account.vol));
+        }
+        return out.toString();
+    }
+
+
+    void addUser(int id, String login, String pass) {
         String salt = addSalt();
         users.add(new User(id, login, addHash(pass, salt), salt));
     }
 
-    User GetUser(int id) {
-        return users.get(id);
-    }
 
-    String GetUsers() {
-        String out = "";
-        for (User user : users) {
-            out += String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass);
-        }
-        return out;
-    }
-
-    //correct
-    int FindUser(UserInput userInput) {
+    int findUser(UserInput userInput) {
 
         for (User user : users) {
             if (userInput.login.equals(user.login)) {
@@ -52,10 +68,8 @@ class AAAService {
         return md5Hex(md5Hex(password) + salt);
     }
 
-    boolean CheckPass(UserInput userInput) {
-
-        for (User user :
-                users) {
+    boolean checkPass(UserInput userInput) {
+        for (User user : users) {
             if (userInput.login.equals(user.login)) {
                 if ((md5Hex(md5Hex(userInput.pass) + user.salt)).equals(user.pass)) {
                     return true;
@@ -67,18 +81,10 @@ class AAAService {
         return false;
     }
 
-    void AddResource(int id, String path, User user, Role role) {
+
+    void addResource(int id, String path, User user, Role role) {
         resources.add(new Resource(id, path, user, role));
     }
-
-    String GetResources() {
-        StringBuilder out = new StringBuilder();
-        for (Resource resource : resources) {
-            out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
-        }
-        return out.toString();
-    }
-
 
     /**
      * проверка доступа к ресурсу
@@ -86,12 +92,11 @@ class AAAService {
      * @param userInput входные параметры приложения
      * @return Нашел ли нужный ресурс с ролью
      */
-    boolean CheckRole(UserInput userInput) {
-        for (Resource res :
-                resources) {
-            if (res.user.equals(users.get(FindUser(userInput)))) {
+    boolean checkRole(UserInput userInput) {
+        for (Resource res : resources) {
+            if (res.user.equals(users.get(findUser(userInput)))) {
                 if (res.role.equals(userInput.role)) {
-                    return res.path.equals(userInput.res) || ExtendRole(userInput);
+                    return res.path.equals(userInput.res) || extendRole(userInput);
                 }
             }
         }
@@ -104,10 +109,10 @@ class AAAService {
      * @param userInput входные параметры приложения
      * @return Есть ли нужная роль у родителя
      */
-    private boolean ExtendRole(UserInput userInput) {
+    private boolean extendRole(UserInput userInput) {
         while (userInput.res.contains(".")) {
             userInput.res = userInput.res.substring(0, userInput.res.lastIndexOf('.'));
-            if (CheckRole(userInput)) {
+            if (checkRole(userInput)) {
                 return true;
             }
         }
@@ -141,8 +146,8 @@ class AAAService {
         }
     }
 
-    boolean AddAccount(UserInput userInput) {
-        Account account = new Account(FindUser(userInput));
+    boolean addAccount(UserInput userInput) {
+        Account account = new Account(findUser(userInput));
         if (isDateValid(account, userInput.ds, userInput.de) && isVolValid(account, userInput.vol)) {
             accounts.add(account);
             return true;
@@ -150,6 +155,4 @@ class AAAService {
             return false;
         }
     }
-
-
 }

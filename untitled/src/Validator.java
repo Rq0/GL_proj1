@@ -4,9 +4,10 @@ class Validator {
 
     private static CommandLine line;
 
-    static void Validate(String[] args,AAAService aaaService) throws ParseException {
+    static void validate(String[] args, AAAService aaaService) throws ParseException {
         boolean authentication = false;
         boolean authorisation = false;
+        boolean accounting;
         UserInput userInput = new UserInput();
         CommandLineParser parser = new DefaultParser();
 
@@ -28,37 +29,40 @@ class Validator {
             System.exit(0);
         }
 
-        if (line.hasOption("h") || line.getOptions().length==0) {
+        if (line.hasOption("h") || line.getOptions().length == 0) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("gl", options);
             System.exit(0);
         }
 
+
         if (line.hasOption("login")) {
             userInput.login = line.getOptionValue("login");
-            aaaService.FindUser(userInput);
-
+            aaaService.findUser(userInput);
             if (line.hasOption("pass")) {
                 userInput.pass = line.getOptionValue("pass");
-                authentication = aaaService.CheckPass(userInput);
+                authentication = aaaService.checkPass(userInput);
+                if (authentication) {
+                    System.out.println("Authentication complete");
+                }
             }
         }
+
 
 
         if (line.hasOption("res") && line.hasOption("role") && authentication) {
             userInput.res = line.getOptionValue("res");
 
-
-            if (Role.EXECUTE.toString().equals(line.getOptionValue("role"))) {
-                userInput.role = Role.EXECUTE;
-            } else if (Role.WRITE.toString().equals(line.getOptionValue("role"))) {
-                userInput.role = Role.WRITE;
-            } else if (Role.READ.toString().equals(line.getOptionValue("role"))) {
-                userInput.role = Role.READ;
-            } else {
+            try{
+                userInput.role = Role.valueOf(line.getOptionValue("role"));
+            }
+            catch (Exception e){
                 System.exit(3);
             }
-            authorisation = aaaService.CheckRole(userInput);
+            authorisation = aaaService.checkRole(userInput);
+            if (authorisation) {
+                System.out.println("Authorisation complete");
+            }
         }
 
         if (line.hasOption("ds") && line.hasOption("de") && line.hasOption("vol") && (authorisation)) {
@@ -66,7 +70,10 @@ class Validator {
             userInput.ds = line.getOptionValue("ds");
             userInput.de = line.getOptionValue("de");
 
-            aaaService.AddAccount(userInput);
+            accounting = aaaService.addAccount(userInput);
+            if (accounting) {
+                System.out.println("Accounting complete");
+            }
         }
     }
 }
