@@ -7,6 +7,8 @@ public class Main {
     public static void main(String args[]) {
         AAAService aaaService;
         aaaService = new AAAService();
+        Validator validator;
+        validator = new Validator();
 
         aaaService.addUser(0, "jdoe", "sup3rpaZZ");
         aaaService.addUser(1, "jrow", "Qweqrty12");
@@ -19,12 +21,13 @@ public class Main {
         System.out.println(aaaService.getResources());
 
         try {
-            Validator.validate(args, aaaService);
+            validator.validate(args, aaaService);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        System.out.println(aaaService.getAccounts());
-
+        finally {
+            System.out.println(aaaService.getAccounts());
+        }
     }
 }
 

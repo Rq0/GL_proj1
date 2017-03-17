@@ -7,10 +7,10 @@ import java.util.Date;
 class Account {
     Date ds;
     Date de;
-    Integer userID;
+    Integer userId;
     Integer vol;
 
-    Account(int userID) {
-        this.userID = userID;
+    Account(int userId) {
+        this.userId = userId;
     }
 }

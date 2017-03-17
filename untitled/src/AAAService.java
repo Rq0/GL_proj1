@@ -37,7 +37,7 @@ class AAAService {
     String getAccounts() {
         StringBuilder out = new StringBuilder();
         for (Account account : accounts) {
-            out.append(String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account.userID, account.ds, account.de, account.vol));
+            out.append(String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account.userId, account.ds, account.de, account.vol));
         }
         return out.toString();
     }
@@ -121,7 +121,7 @@ class AAAService {
     }
 
     private boolean isDateValid(Account account, String ds, String de) {
-        SimpleDateFormat newDate = new SimpleDateFormat("yyyy-mm-dd") {{
+        SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd") {{
             setLenient(false);
         }};
         try {
