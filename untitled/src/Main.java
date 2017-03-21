@@ -1,7 +1,6 @@
 
 import org.apache.commons.cli.ParseException;
 
-
 public class Main {
 
     public static void main(String args[]) {
@@ -24,8 +23,7 @@ public class Main {
             validator.validate(args, aaaService);
         } catch (ParseException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             System.out.println(aaaService.getAccounts());
         }
     }

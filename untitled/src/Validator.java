@@ -21,20 +21,7 @@ class Validator {
         options.addOption("h", "help", false, "Cправка");
 
         setLine(args, options);
-
-        if (line.hasOption("h") || line.getOptions().length == 0) {
-            printHelp(options);
-        }
-        if (line.hasOption("login")) {
-            checkLoginPass(aaaService);
-        }
-        if (line.hasOption("res") && line.hasOption("role") && authentication) {
-            checkResRole(aaaService);
-        }
-        if (line.hasOption("ds") && line.hasOption("de") && line.hasOption("vol") && (authorisation)) {
-            checkDsDeVol(aaaService);
-        }
-
+        lineOptions(options, aaaService);
     }
 
     private void setLine(String[] args, Options options) {
@@ -59,10 +46,7 @@ class Validator {
         aaaService.findUser(userInput);
         if (line.hasOption("pass")) {
             userInput.pass = line.getOptionValue("pass");
-            authentication = aaaService.checkPass(userInput);
-            if (authentication) {
-                System.out.println("Authentication complete");
-            }
+            isAuthentication(authentication = aaaService.checkPass(userInput));
         }
     }
 
@@ -76,11 +60,7 @@ class Validator {
         } catch (Exception e) {
             System.exit(3);
         }
-        authorisation = aaaService.checkRole(userInput);
-        if (authorisation) {
-            System.out.println("Authorisation complete");
-        }
-
+        isAuthorisation(authorisation = aaaService.checkRole(userInput));
     }
 
     private void checkDsDeVol(AAAService aaaService) {
@@ -89,9 +69,40 @@ class Validator {
         userInput.ds = line.getOptionValue("ds");
         userInput.de = line.getOptionValue("de");
 
-        boolean accounting = aaaService.addAccount(userInput);
+        isAccounting(aaaService.addAccount(userInput));
+    }
+
+    private void isAccounting(boolean accounting) {
         if (accounting) {
             System.out.println("Accounting complete");
+        }
+    }
+
+    private void isAuthorisation(boolean authorisation) {
+        if (authorisation) {
+            System.out.println("Authorisation complete");
+        }
+    }
+
+    private void isAuthentication(boolean authentication) {
+        if (authentication) {
+            System.out.println("Authentication complete");
+        }
+    }
+
+    private void lineOptions(Options options, AAAService aaaService) {
+
+        if (line.hasOption("h") || line.getOptions().length == 0) {
+            printHelp(options);
+        }
+        if (line.hasOption("login")) {
+            checkLoginPass(aaaService);
+        }
+        if (line.hasOption("res") && line.hasOption("role") && authentication) {
+            checkResRole(aaaService);
+        }
+        if (line.hasOption("ds") && line.hasOption("de") && line.hasOption("vol") && (authorisation)) {
+            checkDsDeVol(aaaService);
         }
     }
 }
