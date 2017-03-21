@@ -1,8 +1,8 @@
-./.idea/
+./.idea/*
 *.iml
 *.class
-./out/
+./out/*
 *.jar/
-./libs/
+./libs/*
 *.MF
 
