@@ -2,7 +2,6 @@
 *.iml
 ./out/*
 *.jar/
-./libs/*
 *.MF
 /.idea/workspace.xml
 /out/production/untitled/Main.class
