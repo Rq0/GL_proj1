@@ -1,0 +1,5 @@
+language: java
+before_script: ./BUILD.sh
+script: ./TEST.sh
+jdk:
+  - oraclejdk8
