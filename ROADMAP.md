@@ -1,4 +1,5 @@
 <h6> Roadmap Tartynskiy</h6>
+
 1. Общее знакомство :white_check_mark:
   1. Прочитать и понять задание :white_check_mark:
   2. Создать CLI приложение :white_check_mark:
@@ -27,9 +28,4 @@
     * даты :white_check_mark:
     * Объем :white_check_mark:
   4. Записать данные в коллекцию Accounting :white_check_mark:
-5. Тесты
-
-
-
-
-6. \ :interrobang: :x: :white_check_mark:
+5. Тесты :white_check_mark:
