@@ -1,6 +1,10 @@
-language: java
-before_install: chmod +x  gradlew
+ language: java
+before_install:
+ - chmod +x gradlew
+install: true
 before_script: ./BUILD.sh
-script: ./TEST.sh
+script: 
+ "./gradlew build -x copyDistFiles"
+ ./TEST.sh
 jdk:
   - oraclejdk8
