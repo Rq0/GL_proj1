@@ -1,6 +1,2 @@
-language: java
-before_install: - chmod +x gradlew
-before_script: ./BUILD.sh
-script: ./TEST.sh
-jdk:
-  - oraclejdk8
+ language: java
+build: "./TEST.sh"
