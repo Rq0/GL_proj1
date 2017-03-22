@@ -1,12 +1,5 @@
  language: java
-sudo: required
-before_install:
- - chmod +x gradlew
-install: true
-build: ./BUILD.sh
-script: 
- cd "./"
- "./gradlew build -x copyDistFiles"
- ./TEST.sh
+before_script: "./BUILD.sh"
+script: "./TEST.sh"
 jdk:
   - oraclejdk8
