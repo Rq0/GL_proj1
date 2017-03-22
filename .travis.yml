@@ -5,6 +5,7 @@ before_install:
 install: true
 build: ./BUILD.sh
 script: 
+ cd "./"
  "./gradlew build -x copyDistFiles"
  ./TEST.sh
 jdk:
