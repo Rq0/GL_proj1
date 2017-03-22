@@ -19,6 +19,9 @@ public class Main {
         aaaService.addResource(3, "a.bc", aaaService.getUser(0), Role.EXECUTE);
         System.out.println(aaaService.getResources());
 
+        /**
+         * Подавляю исключение здесь, потому что возможные исключения обрабатывается внутри класса Validator
+         */
         try {
             validator.validate(args, aaaService);
         } catch (ParseException e) {

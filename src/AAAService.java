@@ -72,6 +72,7 @@ class AAAService {
         for (User user : users) {
             if (userInput.login.equals(user.login)) {
                 if ((md5Hex(md5Hex(userInput.pass) + user.salt)).equals(user.pass)) {
+                    System.out.println("Authentication complete");
                     return true;
                 } else {
                     System.exit(2);
@@ -150,6 +151,7 @@ class AAAService {
         Account account = new Account(findUser(userInput));
         if (isDateValid(account, userInput.ds, userInput.de) && isVolValid(account, userInput.vol)) {
             accounts.add(account);
+            System.out.println("Accounting complete");
             return true;
         } else {
             return false;
