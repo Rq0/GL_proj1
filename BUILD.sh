@@ -1,7 +1,4 @@
 #!/bin/bash
-#read -n 1 -p "Запустить скрипт для построения билда? (y/n): " AMSURE
-#[ "$AMSURE" = "y" ] || exit
-#echo "" 1>&2
 mkdir -p out
 
 javac -encoding utf8 -d ./out/ -sourcepath src/ ./src/Main.java -classpath "./libs/commons-codec-1.10.jar;./libs/commons-lang3-3.5.jar;./libs/commons-cli-1.3.1.jar"
