@@ -1,5 +1,6 @@
 #!/bin/bash
 mkdir bin #
+#
 javac -cp "./libs/*" -d "./bin" src/*.java #
 echo "Class good"
 touch manifest.txt
