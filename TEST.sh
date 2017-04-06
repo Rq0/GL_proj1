@@ -91,7 +91,7 @@ echo "-------------"
 
 testStart "-login X -pass X -role READ -res X" 1
 
-echo "------------"
+echo "-------------"
 
 if [ "$TEST_PASS" = 0 ]
 	then
