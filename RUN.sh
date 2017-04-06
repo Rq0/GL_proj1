@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar untitled.jar $1
+java -jar untitled.jar $*
