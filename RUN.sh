@@ -1,3 +1,2 @@
 #!/bin/bash
-# 
-java -jar untitled.jar $*
+java -jar GL_proj.jar $*
