@@ -1,9 +1,13 @@
 
 import org.apache.commons.cli.ParseException;
 
+import java.sql.*;
+
+
 public class Main {
 
     public static void main(String args[]) {
+        db();
         AAAService aaaService;
         aaaService = new AAAService();
         Validator validator;
@@ -28,6 +32,27 @@ public class Main {
             e.printStackTrace();
         } finally {
             System.out.println(aaaService.getAccounts());
+        }
+    }
+
+    static void db() {
+        try {
+            Class.forName("org.h2.Driver");
+            //:tcp://localhost/~/test
+            Connection conn = DriverManager.getConnection("jdbc:h2:./GL_proj1",
+                    "sa", "");
+            Statement st = null;
+            st = conn.createStatement();
+            st.execute("create table IF NOT EXISTS user(id int primary key, name varchar(255))");
+            st.execute("insert into user values(3, 'Hello')");
+            ResultSet result;
+            result = st.executeQuery("SELECT * FROM User");
+            while (result.next()) {
+                String name = result.getString("NAME");
+                System.out.println(result.getString("ID") + " " + name);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
