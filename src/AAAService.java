@@ -1,5 +1,7 @@
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -151,6 +153,16 @@ class AAAService {
         Account account = new Account(findUser(userInput));
         if (isDateValid(account, userInput.ds, userInput.de) && isVolValid(account, userInput.vol)) {
             accounts.add(account);
+            try {
+                //./GL_proj1
+                Connection conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test","sa", "");
+                AccountDAO accountDAO = new AccountDAO(conn);
+                accountDAO.AddAccount(account);
+                conn.close();
+            }
+            catch (Exception e){
+                System.exit(434);
+            }
             System.out.println("Accounting complete");
             return true;
         } else {
