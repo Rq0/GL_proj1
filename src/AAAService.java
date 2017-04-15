@@ -1,7 +1,5 @@
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -48,6 +46,12 @@ class AAAService {
     void addUser(int id, String login, String pass) {
         String salt = addSalt();
         users.add(new User(id, login, addHash(pass, salt), salt));
+
+        DbContext dbContext = new DbContext();
+        dbContext.Connect();
+        UserDAO userDAO = new UserDAO();
+        userDAO.AddUser(id, login, addHash(pass, salt), salt, dbContext);
+        dbContext.Dispose();
     }
 
 
@@ -154,13 +158,12 @@ class AAAService {
         if (isDateValid(account, userInput.ds, userInput.de) && isVolValid(account, userInput.vol)) {
             accounts.add(account);
             try {
-                //./GL_proj1
-                Connection conn = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test","sa", "");
-                AccountDAO accountDAO = new AccountDAO(conn);
-                accountDAO.AddAccount(account);
-                conn.close();
-            }
-            catch (Exception e){
+                DbContext dbContext = new DbContext();
+                dbContext.Connect();
+                AccountDAO accountDAO = new AccountDAO();
+                accountDAO.AddAccount(account, dbContext);
+                dbContext.Dispose();
+            } catch (Exception e) {
                 System.exit(434);
             }
             System.out.println("Accounting complete");

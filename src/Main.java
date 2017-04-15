@@ -10,6 +10,7 @@ public class Main {
         Validator validator;
         validator = new Validator();
 
+
         aaaService.addUser(0, "jdoe", "sup3rpaZZ");
         aaaService.addUser(1, "jrow", "Qweqrty12");
         System.out.println(aaaService.getUsers());
