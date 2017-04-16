@@ -13,4 +13,13 @@ class Account {
     Account(int userId) {
         this.userId = userId;
     }
+
+    Account(Integer userId, Integer vol,Date ds,Date de){
+        this.userId = userId;
+        this.vol = vol;
+        this.ds = ds;
+        this.de = de;
+    }
+
+
 }

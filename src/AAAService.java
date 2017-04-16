@@ -13,6 +13,14 @@ class AAAService {
     private ArrayList<Account> accounts = new ArrayList<>();
 
     User getUser(int id) {
+        try {
+            DbContext dbContext = new DbContext();
+            dbContext.Connect();
+            User user = dbContext.SelectUser("Users", " id, login, pass, salt", "where id = "+id);
+            dbContext.Dispose();
+        } catch (Exception e) {
+            System.exit(401);
+        }
         return users.get(id);
     }
 
@@ -28,7 +36,15 @@ class AAAService {
 
     String getResources() {
         StringBuilder out = new StringBuilder();
+        int id = -1;
         for (Resource resource : resources) {
+
+            DbContext dbContext = new DbContext();
+            dbContext.Connect();
+            id++;
+            Resource resource1 = dbContext.SelectResource("Resources","ID, PATH, USERID, ROLE", "where id = "+id);
+            dbContext.Dispose();
+
             out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
         }
         return out.toString();
@@ -36,7 +52,15 @@ class AAAService {
 
     String getAccounts() {
         StringBuilder out = new StringBuilder();
+        int id = 0;
         for (Account account : accounts) {
+
+            DbContext dbContext = new DbContext();
+            dbContext.Connect();
+            id++;
+            Account account1 = dbContext.SelectAccount("Accounts","USERID, VOL, DS, DE  ", "where id = "+id);
+            dbContext.Dispose();
+
             out.append(String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account.userId, account.ds, account.de, account.vol));
         }
         return out.toString();
@@ -47,11 +71,11 @@ class AAAService {
         String salt = addSalt();
         users.add(new User(id, login, addHash(pass, salt), salt));
 
-        DbContext dbContext = new DbContext();
-        dbContext.Connect();
-        UserDAO userDAO = new UserDAO();
-        userDAO.AddUser(id, login, addHash(pass, salt), salt, dbContext);
-        dbContext.Dispose();
+//        DbContext dbContext = new DbContext();
+//        dbContext.Connect();
+//        UserDAO userDAO = new UserDAO();
+//        userDAO.AddUser(id, login, addHash(pass, salt), salt, dbContext);
+//        dbContext.Dispose();
     }
 
 
@@ -90,15 +114,15 @@ class AAAService {
 
 
     void addResource(int id, String path, User user, Role role) {
-        try {
-            DbContext dbContext = new DbContext();
-            dbContext.Connect();
-            ResourceDAO resourceDAO = new ResourceDAO();
-            resourceDAO.AddResource(id,path,user,role, dbContext);
-            dbContext.Dispose();
-        } catch (Exception e) {
-            System.exit(404);
-        }
+//        try {
+//            DbContext dbContext = new DbContext();
+//            dbContext.Connect();
+//            ResourceDAO resourceDAO = new ResourceDAO();
+//            resourceDAO.AddResource(id,path,user,role, dbContext);
+//            dbContext.Dispose();
+//        } catch (Exception e) {
+//            System.exit(404);
+//        }
         resources.add(new Resource(id, path, user, role));
     }
 

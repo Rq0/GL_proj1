@@ -11,15 +11,7 @@ public class Main {
         validator = new Validator();
 
 
-        aaaService.addUser(0, "jdoe", "sup3rpaZZ");
-        aaaService.addUser(1, "jrow", "Qweqrty12");
-        System.out.println(aaaService.getUsers());
-
-        aaaService.addResource(0, "a", aaaService.getUser(0), Role.READ);
-        aaaService.addResource(1, "a.b", aaaService.getUser(0), Role.WRITE);
-        aaaService.addResource(2, "a.b.c", aaaService.getUser(1), Role.EXECUTE);
-        aaaService.addResource(3, "a.bc", aaaService.getUser(0), Role.EXECUTE);
-        System.out.println(aaaService.getResources());
+        AddDefaultTableValues(aaaService);
 
 
         /*
@@ -32,6 +24,18 @@ public class Main {
         } finally {
             System.out.println(aaaService.getAccounts());
         }
+    }
+
+    private static void AddDefaultTableValues(AAAService aaaService) {
+        aaaService.addUser(0, "jdoe", "sup3rpaZZ");
+        aaaService.addUser(1, "jrow", "Qweqrty12");
+        System.out.println(aaaService.getUsers());
+
+        aaaService.addResource(0, "a", aaaService.getUser(0), Role.READ);
+        aaaService.addResource(1, "a.b", aaaService.getUser(0), Role.WRITE);
+        aaaService.addResource(2, "a.b.c", aaaService.getUser(1), Role.EXECUTE);
+        aaaService.addResource(3, "a.bc", aaaService.getUser(0), Role.EXECUTE);
+        System.out.println(aaaService.getResources());
     }
 }
 
