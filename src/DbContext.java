@@ -27,8 +27,8 @@ class DbContext {
 
     void Connect() {
         try {
-            //tcp://localhost/~/test
-            connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
+            //tcp://localhost/~/test    ./GL_proj1
+            connection = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", "sa", "");
         } catch (Exception e) {
             System.exit(434);
         }

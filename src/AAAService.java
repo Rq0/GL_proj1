@@ -90,6 +90,15 @@ class AAAService {
 
 
     void addResource(int id, String path, User user, Role role) {
+        try {
+            DbContext dbContext = new DbContext();
+            dbContext.Connect();
+            ResourceDAO resourceDAO = new ResourceDAO();
+            resourceDAO.AddResource(id,path,user,role, dbContext);
+            dbContext.Dispose();
+        } catch (Exception e) {
+            System.exit(404);
+        }
         resources.add(new Resource(id, path, user, role));
     }
 
