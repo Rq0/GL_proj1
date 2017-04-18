@@ -1,33 +1,29 @@
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 
 class AAAService {
 
-    private ArrayList<User> users = new ArrayList<>();
-    private ArrayList<Resource> resources = new ArrayList<>();
-    private ArrayList<Account> accounts = new ArrayList<>();
-
     User getUser(int id) {
         try {
             DbContext dbContext = new DbContext();
             dbContext.Connect();
-            User user = dbContext.SelectUser("Users", " id, login, pass, salt", "where id = "+id);
-            dbContext.Dispose();
+            UserDAO userDAO = new UserDAO();
+            return userDAO.SelectUser(id, "", dbContext);
         } catch (Exception e) {
             System.exit(401);
         }
-        return users.get(id);
+        return null;
     }
 
 
     String getUsers() {
         StringBuilder out = new StringBuilder();
-        for (User user : users) {
+        for (int i = 0; i < 2; i++) {
+            User user = getUser(i);
             out.append(String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass));
         }
         return out.toString();
@@ -36,32 +32,30 @@ class AAAService {
 
     String getResources() {
         StringBuilder out = new StringBuilder();
+        ResourceDAO resourceDAO = new ResourceDAO();
+        DbContext dbContext = new DbContext();
+        dbContext.Connect();
         int id = -1;
-        for (Resource resource : resources) {
-
-            DbContext dbContext = new DbContext();
-            dbContext.Connect();
-            id++;
-            Resource resource1 = dbContext.SelectResource("Resources","ID, PATH, USERID, ROLE", "where id = "+id);
-            dbContext.Dispose();
-
-            out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
-        }
+//        for (Resource resource : resources) {
+//
+//
+//            id++;
+////            resourceDAO.SelectResource(id,dbContext);
+//
+//            out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
+//        }
         return out.toString();
     }
 
     String getAccounts() {
         StringBuilder out = new StringBuilder();
-        int id = 0;
-        for (Account account : accounts) {
+        AccountDAO accountDAO = new AccountDAO();
+        DbContext dbContext = new DbContext();
+        dbContext.Connect();
 
-            DbContext dbContext = new DbContext();
-            dbContext.Connect();
-            id++;
-            Account account1 = dbContext.SelectAccount("Accounts","USERID, VOL, DS, DE  ", "where id = "+id);
-            dbContext.Dispose();
-
-            out.append(String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account.userId, account.ds, account.de, account.vol));
+        for (int id = 0; id < 1; id++) {
+            Account account1 = accountDAO.SelectAccount(id, dbContext);
+            out.append(String.format("ID пользователя: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account1.userId, account1.ds, account1.de, account1.vol));
         }
         return out.toString();
     }
@@ -69,7 +63,6 @@ class AAAService {
 
     void addUser(int id, String login, String pass) {
         String salt = addSalt();
-        users.add(new User(id, login, addHash(pass, salt), salt));
 
 //        DbContext dbContext = new DbContext();
 //        dbContext.Connect();
@@ -80,6 +73,9 @@ class AAAService {
 
 
     int findUser(UserInput userInput) {
+        DbContext dbContext = new DbContext();
+        UserDAO userDAO = new UserDAO();
+        userDAO.SelectUser(0, "and login = " + userInput.login, dbContext);
 
         for (User user : users) {
             if (userInput.login.equals(user.login)) {
@@ -114,16 +110,15 @@ class AAAService {
 
 
     void addResource(int id, String path, User user, Role role) {
-//        try {
-//            DbContext dbContext = new DbContext();
-//            dbContext.Connect();
-//            ResourceDAO resourceDAO = new ResourceDAO();
-//            resourceDAO.AddResource(id,path,user,role, dbContext);
-//            dbContext.Dispose();
-//        } catch (Exception e) {
-//            System.exit(404);
-//        }
-        resources.add(new Resource(id, path, user, role));
+        try {
+            DbContext dbContext = new DbContext();
+            dbContext.Connect();
+            ResourceDAO resourceDAO = new ResourceDAO();
+            resourceDAO.AddResource(id,path,user,role, dbContext);
+            dbContext.Dispose();
+        } catch (Exception e) {
+            System.exit(404);
+        }
     }
 
     /**
@@ -132,16 +127,16 @@ class AAAService {
      * @param userInput входные параметры приложения
      * @return Нашел ли нужный ресурс с ролью
      */
-    boolean checkRole(UserInput userInput) {
-        for (Resource res : resources) {
-            if (res.user.equals(users.get(findUser(userInput)))) {
-                if (res.role.equals(userInput.role)) {
-                    return res.path.equals(userInput.res) || extendRole(userInput);
-                }
-            }
-        }
-        return false;
-    }
+//    boolean checkRole(UserInput userInput) {
+//        for (Resource res : resources) {
+//            if (res.user.equals(users.get(findUser(userInput)))) {
+//                if (res.role.equals(userInput.role)) {
+//                    return res.path.equals(userInput.res) || extendRole(userInput);
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * наследование роли для дочерних ресурсов
@@ -160,13 +155,13 @@ class AAAService {
         return false;
     }
 
-    private boolean isDateValid(Account account, String ds, String de) {
+    private boolean isDateValid(String ds, String de) {
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd") {{
             setLenient(false);
         }};
         try {
-            account.ds = newDate.parse(ds);
-            account.de = newDate.parse(de);
+            newDate.parse(ds);
+            newDate.parse(de);
             return true;
         } catch (Exception e) {
             System.out.println("Unreachable date format");
@@ -175,9 +170,9 @@ class AAAService {
         }
     }
 
-    private boolean isVolValid(Account account, String vol) {
+    private boolean isVolValid(String vol) {
         try {
-            account.vol = Integer.parseInt(vol);
+            Integer.parseInt(vol);
             return true;
         } catch (Exception e) {
             System.out.println("Unreachable volume format");
@@ -187,21 +182,22 @@ class AAAService {
     }
 
     boolean addAccount(UserInput userInput) {
-        Account account = new Account(findUser(userInput));
-        if (isDateValid(account, userInput.ds, userInput.de) && isVolValid(account, userInput.vol)) {
-            accounts.add(account);
-            try {
-                DbContext dbContext = new DbContext();
-                dbContext.Connect();
-                AccountDAO accountDAO = new AccountDAO();
-                accountDAO.AddAccount(account, dbContext);
-                dbContext.Dispose();
-            } catch (Exception e) {
-                System.exit(434);
+        if (isDateValid(userInput.ds, userInput.de) && isVolValid(userInput.vol)) {
+            SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd");
+                try{
+                    Account account = new Account(1, Integer.parseInt(userInput.vol), newDate.parse(userInput.ds), newDate.parse(userInput.de));
+                    DbContext dbContext = new DbContext();
+                    dbContext.Connect();
+                    AccountDAO accountDAO = new AccountDAO();
+                    accountDAO.AddAccount(account, dbContext);
+                }
+                catch (Exception e) {
+                    System.exit(434);
+                }
+                System.out.println("Accounting complete");
+                return true;
             }
-            System.out.println("Accounting complete");
-            return true;
-        } else {
+        else{
             return false;
         }
     }

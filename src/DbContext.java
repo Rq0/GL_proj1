@@ -52,31 +52,7 @@ class DbContext {
         }
     }
 
-    User SelectUser(String tableName, String values, String filter) {
-        try {
-
-            setStatement(getConnection().createStatement());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String sqlSelectQuery = "Select " + values + " From " + tableName + " " + filter;
-        ResultSet selected;
-        try {
-            selected = getStatement().executeQuery(sqlSelectQuery);
-
-            return new User(
-                    selected.getInt(1),
-                    selected.getString(2),
-                    selected.getString(3),
-                    selected.getString(4));
-
-        } catch (Exception e) {
-            System.exit(-104);
-        }
-        return null;
-    }
-
-    Resource SelectResource(String tableName, String values, String filter) {
+    ResultSet Select(String tableName, String values, String filter){
         try {
             setStatement(getConnection().createStatement());
         } catch (Exception e) {
@@ -86,38 +62,10 @@ class DbContext {
         ResultSet selected;
         try {
             selected = getStatement().executeQuery(sqlSelectQuery);
-
-            return new Resource(
-                    selected.getInt(1),
-                    selected.getString(2),
-                    SelectUser("Users", "id, login, pass, salt", "where id = " + selected.getInt(3)),
-                    Role.valueOf(selected.getString(4)));
+            return selected;
 
         } catch (Exception e) {
             System.exit(404);
-        }
-        return null;
-    }
-
-    Account SelectAccount(String tableName, String values, String filter) {
-        try {
-            setStatement(getConnection().createStatement());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String sqlSelectQuery = "Select " + values + " From " + tableName + " " + filter;
-        ResultSet selected;
-        try {
-            selected = getStatement().executeQuery(sqlSelectQuery);
-
-            return new Account(
-                    selected.getInt(1),
-                    selected.getInt(2),
-                    selected.getDate(3),
-                    selected.getDate(4));
-
-        } catch (Exception e) {
-            System.exit(4042);
         }
         return null;
     }
