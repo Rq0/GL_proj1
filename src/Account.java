@@ -5,17 +5,20 @@ import java.util.Date;
  * Created by rq0 on 10.03.2017.
  */
 class Account {
+    Integer id;
+    Integer resourceId;
+    Integer vol;
     Date ds;
     Date de;
-    Integer userId;
-    Integer vol;
 
-    Account(int userId) {
-        this.userId = userId;
+
+    Account() {
+
     }
 
-    Account(Integer userId, Integer vol,Date ds,Date de){
-        this.userId = userId;
+    Account(Integer id, Integer resourceId, Integer vol, Date ds, Date de) {
+        this.id = id;
+        this.resourceId = resourceId;
         this.vol = vol;
         this.ds = ds;
         this.de = de;

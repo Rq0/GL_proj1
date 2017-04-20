@@ -1,18 +1,28 @@
-
 import org.apache.commons.cli.ParseException;
+import org.flywaydb.core.Flyway;
 
 
 public class Main {
+    //  private static final Logger log = LogManager.getLogger(Main.class.getName());
 
     public static void main(String args[]) {
+        //  log.info("Приложение запущено");
         AAAService aaaService;
         aaaService = new AAAService();
         Validator validator;
         validator = new Validator();
 
 
-        AddDefaultTableValues(aaaService);
+        Flyway flyway = new Flyway();
+        flyway.setDataSource("jdbc:h2:tcp://localhost/~/test", "sa", "");
+        try {
+            flyway.migrate();
+        } catch (Exception e) {
+            flyway.baseline();
+        }
 
+        System.out.println(aaaService.getUsers());
+        System.out.println(aaaService.getResources());
 
         /*
           Подавляю исключение здесь, потому что возможные исключения обрабатывается внутри класса Validator
@@ -24,19 +34,9 @@ public class Main {
         } finally {
             System.out.println(aaaService.getAccounts());
         }
+        //     log.info("Приложение закрыто");
     }
 
-    private static void AddDefaultTableValues(AAAService aaaService) {
-        aaaService.addUser(0, "jdoe", "sup3rpaZZ");
-        aaaService.addUser(1, "jrow", "Qweqrty12");
-        System.out.println(aaaService.getUsers());
-
-        aaaService.addResource(0, "a", aaaService.getUser(0), Role.READ);
-        aaaService.addResource(1, "a.b", aaaService.getUser(0), Role.WRITE);
-        aaaService.addResource(2, "a.b.c", aaaService.getUser(1), Role.EXECUTE);
-        aaaService.addResource(3, "a.bc", aaaService.getUser(0), Role.EXECUTE);
-        System.out.println(aaaService.getResources());
-    }
 }
 
 

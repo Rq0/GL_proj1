@@ -4,6 +4,9 @@ class User {
     String salt;
     int id;
 
+    User(){
+
+    }
     User(int id, String login, String pass, String salt) {
         this.id = id;
         this.login = login;
