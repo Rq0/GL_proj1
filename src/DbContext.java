@@ -22,16 +22,16 @@ class DbContext {
 
     }
 
-    void Connect() {
+    void connect() {
         try {
             //tcp://localhost/~/test    ./GL_proj1
-            connection = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", "sa", "");
+            connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
         } catch (Exception e) {
             System.exit(434);
         }
     }
 
-    void CreateTable(String tableName, String tableParams) {
+    void createTable(String tableName, String tableParams) {
         try {
             setStatement(getConnection().createStatement());
             String sqlCreateQuery = "create table IF NOT EXISTS " + tableName + " (" + tableParams + ")";
@@ -42,7 +42,7 @@ class DbContext {
         }
     }
 
-    void Insert(String tableName, String values) {
+    void insert(String tableName, String values) {
 
         String sqlInsertQuery = "insert into " + tableName + " values(" + values + ")";
         try {
@@ -52,7 +52,7 @@ class DbContext {
         }
     }
 
-    ResultSet Select(String tableName, String values, String filter) {
+    ResultSet select(String tableName, String values, String filter) {
         try {
             setStatement(getConnection().createStatement());
         } catch (Exception e) {
@@ -70,7 +70,7 @@ class DbContext {
         return null;
     }
 
-    int Count(String tableName) {
+    int count(String tableName) {
         String sqlSelectQuery = "Select count(id) From " + tableName;
 
         try {
@@ -89,7 +89,7 @@ class DbContext {
     Resource getResourceFromBase(UserInput userInput) {
         AAAService aaaService = new AAAService();
         try {
-            Connect();
+            connect();
             setStatement(getConnection().createStatement());
             String[] masOfPath = userInput.res.split("\\."); //разбиваем путь по уровням
             boolean access = false;
@@ -108,7 +108,11 @@ class DbContext {
             if (access) {
                 ResultSet result = statement.executeQuery(String.format("SELECT * FROM RESOURCES where path like '%s'", userInput.res)); //получаем тот ресурс который запрашивали
                 result.next();
-                return new Resource(Integer.valueOf(result.getString(0)), result.getString(2), aaaService.getUser(result.getInt(1)), userInput.role);
+                return new Resource(
+                        result.getInt("ID"),
+                        result.getString(2),
+                        aaaService.getUser(result.getInt(1)),
+                        userInput.role);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,9 +120,11 @@ class DbContext {
         return new Resource();
     }
 
-    void Dispose() {
+    void dispose() {
         try {
+            statement.close();
             connection.close();
+
         } catch (SQLException e) {
             System.out.println("не закрылось");
         }

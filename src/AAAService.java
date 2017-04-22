@@ -10,38 +10,36 @@ class AAAService {
     User getUser(int id) {
         try {
             DbContext dbContext = new DbContext();
-            dbContext.Connect();
+            dbContext.connect();
             UserDAO userDAO = new UserDAO();
-            return userDAO.SelectUser(id, "", dbContext);
+            return userDAO.selectUser(id, dbContext);
         } catch (Exception e) {
             System.exit(401);
         }
         return null;
     }
 
-
     String getUsers() {
         DbContext dbContext = new DbContext();
-        dbContext.Connect();
+        dbContext.connect();
         StringBuilder out = new StringBuilder();
-        for (int i = 0; i < dbContext.Count("users"); i++) {
-/* i+1 на локалхосте, i в файле */
-            User user = getUser(i + 1);
+        int count = dbContext.count("users") + 1;
+        for (int i = 1; i < count; i++) {
+            User user = getUser(i);
             out.append(String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass));
         }
         return out.toString();
     }
 
-
     String getResources() {
         StringBuilder out = new StringBuilder();
         ResourceDAO resourceDAO = new ResourceDAO();
         DbContext dbContext = new DbContext();
-        dbContext.Connect();
+        dbContext.connect();
 
-        for (int i = 0; i < dbContext.Count("RESOURCES"); i++) {
+        for (int i = 1; i < dbContext.count("RESOURCES") + 1; i++) {
 
-            Resource resource = resourceDAO.SelectResource(i + 1, dbContext);
+            Resource resource = resourceDAO.selectResource(i, dbContext);
 
             out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
         }
@@ -52,36 +50,24 @@ class AAAService {
         StringBuilder out = new StringBuilder();
         AccountDAO accountDAO = new AccountDAO();
         DbContext dbContext = new DbContext();
-        dbContext.Connect();
-
-        for (int id = 0; id < dbContext.Count("ACCOUNTS"); id++) {
-            Account account1 = accountDAO.SelectAccount(id, dbContext);
+        dbContext.connect();
+//nullPE
+        for (int id = 1; id < dbContext.count("ACCOUNTS") + 1; id++) {
+            Account account1 = accountDAO.selectAccount(id, dbContext);
             out.append(String.format("ID ресурса: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account1.resourceId, account1.ds, account1.de, account1.vol));
         }
         return out.toString();
     }
 
-
-    void addUser(int id, String login, String pass) {
-        String salt = addSalt();
-
-        DbContext dbContext = new DbContext();
-        dbContext.Connect();
-        UserDAO userDAO = new UserDAO();
-        userDAO.AddUser(id, login, addHash(pass, salt), salt, dbContext);
-        dbContext.Dispose();
-    }
-
-
     int findUser(UserInput userInput) {
         DbContext dbContext = new DbContext();
-        dbContext.Connect();
+        dbContext.connect();
 //        UserDAO userDAO = new UserDAO();
-//        userDAO.SelectUser(0, "and login = " + userInput.login, dbContext);
-
-        for (int i = 0; i < dbContext.Count("USERS"); i++) {
-            if (userInput.login.equals(getUser(i+1).login)) {
-                return i+1;
+//        userDAO.selectUser(0, "and login = " + userInput.login, dbContext);
+        int count = dbContext.count("USERS") + 1;
+        for (int i = 1; i < count; i++) {
+            if (userInput.login.equals(getUser(i).login)) {
+                return i;
             }
         }
         System.exit(1);
@@ -97,37 +83,19 @@ class AAAService {
     }
 
     boolean checkPass(UserInput userInput) {
-//        DbContext dbContext = new DbContext();
-//        dbContext.Connect();
-//        for (int i = 1; i < dbContext.Count("USERS"); i++) {
-//            if (userInput.login.equals(getUser(i).login)) {
-//                if ((userInput.pass + getUser(i).salt).equals(getUser(i).salt)) {
-//                    System.out.println("Authentication complete");
-//                    return true;
-//                } else {
-//
-//                }
-//            }
-//        }
-//        System.exit(2);
-//        return false;
-        return true;
-    }
-
-    void addResource(int id, String path, User user, Role role) {
-        try {
-            DbContext dbContext = new DbContext();
-            dbContext.Connect();
-            ResourceDAO resourceDAO = new ResourceDAO();
-            resourceDAO.AddResource(
-                    path,
-                    user,
-                    role,
-                    dbContext);
-            dbContext.Dispose();
-        } catch (Exception e) {
-            System.exit(404);
+        DbContext dbContext = new DbContext();
+        dbContext.connect();
+        int count = dbContext.count("USERS") + 1;
+        for (int i = 1; i < count; i++) {
+            if (userInput.login.equals(getUser(i).login)) {
+                if ((md5Hex(md5Hex(userInput.pass) + getUser(i).salt).equals(getUser(i).pass))) {
+                    System.out.println("Authentication complete");
+                    return true;
+                }
+            }
         }
+        System.exit(2);
+        return false;
     }
 
     private boolean isDateValid(String ds, String de) {
@@ -161,16 +129,17 @@ class AAAService {
             SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 DbContext dbContext = new DbContext();
-                dbContext.Connect();
+                dbContext.connect();
                 Account account = new Account(
-                        findUser(userInput),
-                        dbContext.getResourceFromBase(userInput).id,
+                        dbContext.count("ACCOUNTS") + 1,
+                        (dbContext.getResourceFromBase(userInput)).id,
                         Integer.parseInt(userInput.vol),
                         newDate.parse(userInput.ds),
                         newDate.parse(userInput.de));
 
                 AccountDAO accountDAO = new AccountDAO();
-                accountDAO.AddAccount(account, dbContext);
+                accountDAO.addAccount(account, dbContext);
+                dbContext.dispose();
             } catch (Exception e) {
                 System.exit(434);
             }

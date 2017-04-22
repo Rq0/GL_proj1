@@ -1,5 +1,6 @@
 import org.apache.commons.cli.ParseException;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 
 
 public class Main {
@@ -14,10 +15,10 @@ public class Main {
 
 
         Flyway flyway = new Flyway();
-        flyway.setDataSource("jdbc:h2:tcp://localhost/~/test", "sa", "");
+        flyway.setDataSource("jdbc:h2:./GL_proj1", "sa", "");
         try {
             flyway.migrate();
-        } catch (Exception e) {
+        } catch (FlywayException e) {
             flyway.baseline();
         }
 

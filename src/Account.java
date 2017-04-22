@@ -11,11 +11,6 @@ class Account {
     Date ds;
     Date de;
 
-
-    Account() {
-
-    }
-
     Account(Integer id, Integer resourceId, Integer vol, Date ds, Date de) {
         this.id = id;
         this.resourceId = resourceId;
