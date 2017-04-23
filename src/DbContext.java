@@ -34,7 +34,7 @@ class DbContext {
              * //tcp://localhost/~/test
              * ./GL_proj1
              */
-            connection = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", "sa", "");
+            connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
         } catch (Exception e) {
             log.fatal("Не соединились с бд: {}", e.getMessage());
             System.exit(434);

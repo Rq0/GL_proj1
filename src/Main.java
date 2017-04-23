@@ -36,7 +36,7 @@ public class Main {
 
     private static void migration() {
         Flyway flyway = new Flyway();
-        flyway.setDataSource("jdbc:h2:tcp://localhost/~/test", "sa", "");
+        flyway.setDataSource("jdbc:h2:./GL_proj1", "sa", "");
         log.info("DataSource для миграции установлен");
         try {
             flyway.migrate();
