@@ -52,7 +52,6 @@ class Validator {
     }
 
     private boolean isAuthorisation(AAAService aaaService, UserInput userInput) {
-        DbContext dbContext = new DbContext();
         userInput.res = line.getOptionValue("res");
 
         try {
@@ -60,7 +59,7 @@ class Validator {
         } catch (Exception e) {
             System.exit(3);
         }
-        return (dbContext.getResourceFromBase(userInput) != null);
+        return ((aaaService.getAccess(userInput)) > -1);
     }
 
     private boolean isAuthentication(AAAService aaaService, UserInput userInput) {

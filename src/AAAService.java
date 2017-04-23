@@ -12,22 +12,18 @@ class AAAService {
 
     User getUser(int id) {
         try {
-            DbContext dbContext = new DbContext();
-            dbContext.connect();
             UserDAO userDAO = new UserDAO();
-            return userDAO.selectUser(id, dbContext);
+            return userDAO.selectUser(id);
         } catch (Exception e) {
-            log.fatal("Пользователя с id - {} не найден",id);
+            log.fatal("Пользователя с id - {} не найден", id);
             System.exit(401);
         }
         return null;
     }
 
     String getUsers() {
-        DbContext dbContext = new DbContext();
-        dbContext.connect();
         StringBuilder out = new StringBuilder();
-        int count = dbContext.count("users") + 1;
+        int count = new DbContext().count("users") + 1;
         for (int i = 1; i < count; i++) {
             User user = getUser(i);
             out.append(String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass));
@@ -35,40 +31,51 @@ class AAAService {
         return out.toString();
     }
 
+
     String getResources() {
         StringBuilder out = new StringBuilder();
         ResourceDAO resourceDAO = new ResourceDAO();
-        DbContext dbContext = new DbContext();
-        dbContext.connect();
+        int count = new DbContext().count("RESOURCES") + 1;
+        for (int i = 1; i < count; i++) {
 
-        for (int i = 1; i < dbContext.count("RESOURCES") + 1; i++) {
-
-            Resource resource = resourceDAO.selectResource(i, dbContext);
+            Resource resource = resourceDAO.selectResource(i);
 
             out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
         }
         return out.toString();
     }
 
+    int getAccess(UserInput userInput) {
+        String[] masOfPath = userInput.res.split("\\."); //разбиваем путь по уровням
+        String findPath = "";
+        int userId = findUser(userInput);
+        try {
+            for (String string : masOfPath) {
+                findPath += string; //опускаемся на уровень ниже
+                if (new ResourceDAO().haveAccess(findPath, userInput.role, userId)) {
+                    return (new ResourceDAO().getResource(userInput.res, userId)).id;
+                }
+            }
+        } catch (NullPointerException e) {
+            log.fatal("Нет доступа для {}; {}", userInput.login);
+        }
+        System.exit(4);
+        return -1;
+    }
+
     String getAccounts() {
         StringBuilder out = new StringBuilder();
         AccountDAO accountDAO = new AccountDAO();
-        DbContext dbContext = new DbContext();
-        dbContext.connect();
-//nullPE
-        for (int id = 1; id < dbContext.count("ACCOUNTS") + 1; id++) {
-            Account account1 = accountDAO.selectAccount(id, dbContext);
+        int count = new DbContext().count("ACCOUNTS") + 1;
+        for (int id = 1; id < count; id++) {
+            Account account1 = accountDAO.selectAccount(id);
             out.append(String.format("ID ресурса: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account1.resourceId, account1.ds, account1.de, account1.vol));
         }
         return out.toString();
     }
 
     int findUser(UserInput userInput) {
-        DbContext dbContext = new DbContext();
-        dbContext.connect();
-//        UserDAO userDAO = new UserDAO();
-//        userDAO.selectUser(0, "and login = " + userInput.login, dbContext);
-        int count = dbContext.count("USERS") + 1;
+        int count = new DbContext().count("USERS") + 1;
         for (int i = 1; i < count; i++) {
             if (userInput.login.equals(getUser(i).login)) {
                 log.info("Пользователь {} найден", userInput.login);
@@ -91,9 +98,7 @@ class AAAService {
     }
 
     boolean checkPass(UserInput userInput) {
-        DbContext dbContext = new DbContext();
-        dbContext.connect();
-        int count = dbContext.count("USERS") + 1;
+        int count = new DbContext().count("USERS") + 1;
         for (int i = 1; i < count; i++) {
             if (userInput.login.equals(getUser(i).login)) {
                 if ((md5Hex(md5Hex(userInput.pass) + getUser(i).salt).equals(getUser(i).pass))) {
@@ -140,19 +145,17 @@ class AAAService {
         if (isDateValid(userInput.ds, userInput.de) && isVolValid(userInput.vol)) {
             SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                DbContext dbContext = new DbContext();
-                dbContext.connect();
                 Account account = new Account(
-                        dbContext.count("ACCOUNTS")+1,
-                        (dbContext.getResourceFromBase(userInput)).id,
+                        new DbContext().count("ACCOUNTS") + 1,
+                        getAccess(userInput),
                         Integer.parseInt(userInput.vol),
                         newDate.parse(userInput.ds),
                         newDate.parse(userInput.de));
 
                 AccountDAO accountDAO = new AccountDAO();
-                accountDAO.addAccount(account, dbContext);
+                accountDAO.addAccount(account);
             } catch (Exception e) {
-                log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login,e.getMessage());
+                log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login, e.getMessage());
                 System.exit(434);
             }
             return true;

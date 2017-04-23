@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 finalerror=0 #
 goodTest=0 #
 badTest=0 #

@@ -6,7 +6,8 @@ import java.text.SimpleDateFormat;
 
 class AccountDAO {
     private static final Logger log = LogManager.getLogger(Main.class.getName());
-    void addAccount(Account account, DbContext dbContext) {
+
+    void addAccount(Account account) {
         String table = "Accounts";
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd") {
             {
@@ -14,15 +15,15 @@ class AccountDAO {
             }
         };
         String paramsValues = String.format("%s, %s, %s, '%s', '%s'", account.id, account.resourceId, account.vol, newDate.format(account.ds), newDate.format(account.de));
-        dbContext.insert(table, paramsValues);
+        new DbContext().insert(table, paramsValues);
         log.info("Добавлен аккаунт {} в бд", account.id);
     }
 
-    Account selectAccount(int accountId, DbContext dbContext) {
+    Account selectAccount(int accountId) {
         String table = "Accounts";
         String params = "ID, RESOURCEID, VOL, DS, DE";
         String filter = "where ID = " + accountId;
-        ResultSet selected = dbContext.select(table, params, filter);
+        ResultSet selected = new DbContext().select(table, params, filter);
 
         try {
             selected.next();
@@ -33,7 +34,7 @@ class AccountDAO {
                     selected.getDate(4),
                     selected.getDate(5));
         } catch (Exception e) {
-            log.error("SelectAccount {} error; {}",accountId, e.getMessage());
+            log.error("SelectAccount {} error; {}", accountId, e.getMessage());
             System.exit(4042);
         }
         return null;

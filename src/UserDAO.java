@@ -5,18 +5,19 @@ import java.sql.ResultSet;
 
 class UserDAO {
     private static final Logger log = LogManager.getLogger(Main.class.getName());
-    void addUser(int id, String login, String pass, String salt, DbContext dbContext) {
+
+    void addUser(int id, String login, String pass, String salt) {
         String table = "Users";
         String paramsValues = String.format("%s,'%s', '%s','%s'", id, login, pass, salt);
-        dbContext.insert(table, paramsValues);
+        new DbContext().insert(table, paramsValues);
         log.info("Добавлен пользователь {} в бд", id);
     }
 
-    User selectUser(int userId, DbContext dbContext) {
+    User selectUser(int userId) {
         String table = "Users";
         String params = "ID,LOGIN, PASS, SALT  ";
         String filter = "where id = " + userId;
-        ResultSet selected = dbContext.select(table, params, filter);
+        ResultSet selected = new DbContext().select(table, params, filter);
 
         try {
             selected.getMetaData().getColumnCount();
@@ -28,7 +29,7 @@ class UserDAO {
                     selected.getString(3),
                     selected.getString(4));
         } catch (Exception e) {
-            log.error("SelectUser {} error {};",userId, e.getMessage());
+            log.error("SelectUser {} error {};", userId, e.getMessage());
             System.exit(-104);
         }
         return null;

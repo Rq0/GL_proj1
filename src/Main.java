@@ -6,7 +6,7 @@ import org.flywaydb.core.api.FlywayException;
 
 
 public class Main {
-      private static final Logger log = LogManager.getLogger(Main.class.getName());
+    private static final Logger log = LogManager.getLogger(Main.class.getName());
 
     public static void main(String args[]) {
         log.info("-------------------------------------------------------------");
