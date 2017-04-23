@@ -1,9 +1,11 @@
 import org.apache.commons.cli.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 class Validator {
 
     private CommandLine line;
-
+    private static final Logger log = LogManager.getLogger(Main.class.getName());
 
     void validate(String[] args, AAAService aaaService) throws ParseException {
         UserInput userInput = new UserInput();
@@ -26,14 +28,17 @@ class Validator {
         CommandLineParser parser = new DefaultParser();
         try {
             line = parser.parse(options, args);
+            log.info("Параметры консоли спарсены");
         } catch (Exception e) {
             printHelp(options);
+            log.error("Параметры консоли не парсятся", e.getMessage());
         }
     }
 
     private void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("gl_proj", options);
+        log.info("Печать справки");
         System.exit(0);
     }
 
@@ -77,12 +82,15 @@ class Validator {
         }
         if (line.hasOption("login")) {
             authentication = isAuthentication(aaaService, userInput);
+            log.info("Этап аутентификации прошел");
         }
         if (line.hasOption("res") && line.hasOption("role") && authentication) {
             authorisation = isAuthorisation(aaaService, userInput);
+            log.info("Этап авторизации прошел");
         }
         if (line.hasOption("ds") && line.hasOption("de") && line.hasOption("vol") && (authorisation)) {
             isAccounting(aaaService, userInput);
+            log.info("Этап аккаунтинга прошел");
         }
     }
 }

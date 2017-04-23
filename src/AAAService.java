@@ -1,4 +1,6 @@
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.SimpleDateFormat;
 
@@ -6,6 +8,7 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 
 class AAAService {
+    private static final Logger log = LogManager.getLogger(Main.class.getName());
 
     User getUser(int id) {
         try {
@@ -14,6 +17,7 @@ class AAAService {
             UserDAO userDAO = new UserDAO();
             return userDAO.selectUser(id, dbContext);
         } catch (Exception e) {
+            log.fatal("Пользователя с id - {} не найден",id);
             System.exit(401);
         }
         return null;
@@ -67,18 +71,22 @@ class AAAService {
         int count = dbContext.count("USERS") + 1;
         for (int i = 1; i < count; i++) {
             if (userInput.login.equals(getUser(i).login)) {
+                log.info("Пользователь {} найден", userInput.login);
                 return i;
             }
         }
+        log.warn("Пользователь {} не найден в бд", userInput.login);
         System.exit(1);
         return -1;
     }
 
     private String addSalt() {
+        log.info("Добавляем salt");
         return RandomStringUtils.randomAscii(8);
     }
 
     private String addHash(String password, String salt) {
+        log.info("Добавляем hash");
         return md5Hex(md5Hex(password) + salt);
     }
 
@@ -89,11 +97,12 @@ class AAAService {
         for (int i = 1; i < count; i++) {
             if (userInput.login.equals(getUser(i).login)) {
                 if ((md5Hex(md5Hex(userInput.pass) + getUser(i).salt).equals(getUser(i).pass))) {
-                    System.out.println("Authentication complete");
+                    log.info("Authentication complete {}", userInput.login);
                     return true;
                 }
             }
         }
+        log.warn("Пароль для {} введен не правильно", userInput.login);
         System.exit(2);
         return false;
     }
@@ -105,9 +114,10 @@ class AAAService {
         try {
             newDate.parse(ds);
             newDate.parse(de);
+            log.info("Даты валидны");
             return true;
         } catch (Exception e) {
-            System.out.println("Unreachable date format");
+            log.warn("Unreachable date format", e.getMessage());
             System.exit(5);
             return false;
         }
@@ -116,22 +126,24 @@ class AAAService {
     private boolean isVolValid(String vol) {
         try {
             Integer.parseInt(vol);
+            log.info("Объем валиден");
             return true;
         } catch (Exception e) {
-            System.out.println("Unreachable volume format");
+            log.warn("Unreachable volume format", e.getMessage());
             System.exit(5);
             return false;
         }
     }
 
     boolean addAccount(UserInput userInput) {
+        log.info("Начат процесс добавления аккаунта");
         if (isDateValid(userInput.ds, userInput.de) && isVolValid(userInput.vol)) {
             SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 DbContext dbContext = new DbContext();
                 dbContext.connect();
                 Account account = new Account(
-                        dbContext.count("ACCOUNTS") + 1,
+                        dbContext.count("ACCOUNTS")+1,
                         (dbContext.getResourceFromBase(userInput)).id,
                         Integer.parseInt(userInput.vol),
                         newDate.parse(userInput.ds),
@@ -139,13 +151,13 @@ class AAAService {
 
                 AccountDAO accountDAO = new AccountDAO();
                 accountDAO.addAccount(account, dbContext);
-                dbContext.dispose();
             } catch (Exception e) {
+                log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login,e.getMessage());
                 System.exit(434);
             }
-            System.out.println("Accounting complete");
             return true;
         } else {
+            log.warn("Один из параметров аккаунта {} не валиден", userInput.login);
             return false;
         }
     }

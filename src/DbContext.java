@@ -1,16 +1,19 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 
 class DbContext {
 
-    private void setStatement(Statement statement) {
+    private void setStatement(PreparedStatement statement) {
         this.statement = statement;
     }
 
-    private Statement getStatement() {
+    private PreparedStatement getStatement() {
         return statement;
     }
 
-    private Statement statement;
+    private PreparedStatement statement;
 
     private Connection getConnection() {
         return connection;
@@ -18,26 +21,35 @@ class DbContext {
 
     private Connection connection;
 
+    private static final Logger log = LogManager.getLogger(Main.class.getName());
+
     DbContext() {
 
     }
 
     void connect() {
         try {
-            //tcp://localhost/~/test    ./GL_proj1
-            connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
+            /**
+             * Возможные варианты:
+             * //tcp://localhost/~/test
+             * ./GL_proj1
+             */
+            connection = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", "sa", "");
         } catch (Exception e) {
+            log.fatal("Не соединились с бд: {}", e.getMessage());
             System.exit(434);
         }
     }
 
     void createTable(String tableName, String tableParams) {
         try {
-            setStatement(getConnection().createStatement());
+
             String sqlCreateQuery = "create table IF NOT EXISTS " + tableName + " (" + tableParams + ")";
+            getConnection().prepareStatement(sqlCreateQuery).executeQuery();
             getStatement().execute(sqlCreateQuery);
+            log.info("Создана таблица бд");
         } catch (Exception e) {
-            System.out.println(111);
+            log.error("Не смогли создать таблицу бд: {}", e.getMessage());
             System.exit(10);
         }
     }
@@ -46,25 +58,28 @@ class DbContext {
 
         String sqlInsertQuery = "insert into " + tableName + " values(" + values + ")";
         try {
-            getStatement().execute(sqlInsertQuery);
+            getConnection().prepareStatement(sqlInsertQuery).executeUpdate();
+           // getStatement().execute(sqlInsertQuery);
+            log.info("Прошла вставка в бд");
         } catch (Exception e) {
+            log.error("Не прошла вставка в бд: {}", e.getMessage());
             System.exit(11);
         }
     }
 
     ResultSet select(String tableName, String values, String filter) {
-        try {
-            setStatement(getConnection().createStatement());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         String sqlSelectQuery = "Select " + values + " From " + tableName + " " + filter;
         ResultSet selected;
         try {
-            selected = getStatement().executeQuery(sqlSelectQuery);
+
+            //setStatement(getConnection().createStatement());
+            selected = getConnection().prepareStatement(sqlSelectQuery).executeQuery();
+                   // getStatement().executeQuery(sqlSelectQuery);
             return selected;
 
         } catch (Exception e) {
+            log.error("Не прошла выборка:{}, ошибка: {}", sqlSelectQuery, e.getMessage());
             System.exit(404);
         }
         return null;
@@ -74,13 +89,11 @@ class DbContext {
         String sqlSelectQuery = "Select count(id) From " + tableName;
 
         try {
-            setStatement(getConnection().createStatement());
-            ResultSet resultSet = getStatement().executeQuery(sqlSelectQuery);
+            ResultSet resultSet = getConnection().prepareStatement(sqlSelectQuery).executeQuery();
             resultSet.last();
             return resultSet.getInt(1);
         } catch (Exception e) {
-            System.out.println("CountException");
-            e.printStackTrace();
+            log.error("Не удалось подсчитать количество строк в таблице {}; {}",tableName,e.getMessage());
         }
         return 1;
     }
@@ -90,15 +103,16 @@ class DbContext {
         AAAService aaaService = new AAAService();
         try {
             connect();
-            setStatement(getConnection().createStatement());
+
             String[] masOfPath = userInput.res.split("\\."); //разбиваем путь по уровням
             boolean access = false;
             String findPath = "";
             for (String string : masOfPath) {
                 findPath += string; //опускаемся на уровень ниже
                 {
-                    ResultSet result = statement.executeQuery(String.format("SELECT * FROM RESOURCES where path like '%s' ", findPath)
-                            + String.format(" and role like '%s", userInput.role) + String.format("' and userid like %s", aaaService.findUser(userInput)));
+
+                    ResultSet result = getConnection().prepareStatement(String.format("SELECT * FROM RESOURCES where path like '%s' ", findPath)
+                            + String.format(" and role like '%s", userInput.role) + String.format("' and userid like %s", aaaService.findUser(userInput))).executeQuery();
                     if (result.next()) { //проверяем вернулся ли хоть 1 ресурс с таким доступом
                         access = true;
                         break;
@@ -106,7 +120,7 @@ class DbContext {
                 }
             }
             if (access) {
-                ResultSet result = statement.executeQuery(String.format("SELECT * FROM RESOURCES where path like '%s'", userInput.res)); //получаем тот ресурс который запрашивали
+                ResultSet result = getConnection().prepareStatement(String.format("SELECT * FROM RESOURCES where path like '%s'", userInput.res)).executeQuery(); //получаем тот ресурс который запрашивали
                 result.next();
                 return new Resource(
                         result.getInt("ID"),
@@ -115,7 +129,7 @@ class DbContext {
                         userInput.role);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("Не прошло определение доступа к ресурсу {}; ",userInput.res, e.getMessage());
         }
         return new Resource();
     }
@@ -126,7 +140,7 @@ class DbContext {
             connection.close();
 
         } catch (SQLException e) {
-            System.out.println("не закрылось");
+            log.error("не закрылось, {}",e.getMessage());
         }
     }
 }

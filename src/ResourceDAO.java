@@ -1,13 +1,17 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.ResultSet;
 
 class ResourceDAO {
+    private static final Logger log = LogManager.getLogger(Main.class.getName());
+    private String table = "Resources";
+
     void addResource(String path, User user, Role role, DbContext dbContext) {
-        String table = "Resources";
-        String params = "path varchar(255), userId int, role varchar(255)";
 
         String paramsValues = String.format("'%s', %s,'%s'", path, user.id, role);
-        dbContext.createTable(table, params);
         dbContext.insert(table, paramsValues);
+        log.info("Добавлен ресурс {} для {} в бд", path, user.id);
     }
 
     Resource selectResource(int id, DbContext dbContext) {
@@ -24,7 +28,7 @@ class ResourceDAO {
                     userDAO.selectUser(selected.getInt(3), dbContext),
                     Role.valueOf(selected.getString(4)));
         } catch (Exception e) {
-            System.out.println("SelectResourceError");
+            log.error("SelectResource {} error; {}", id, e.getMessage());
         }
         return null;
     }
