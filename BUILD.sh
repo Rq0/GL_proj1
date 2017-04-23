@@ -1,7 +1,7 @@
 #!/bin/bash
 mkdir bin #
 javac -encoding windows-1251 -cp "./libs/*" -d "./bin" src/*.java #
-cp -R -v ./res/* ./bin #
+cp -R -v ./resources/* ./bin #
 echo "Class good"
 touch manifest.txt 
 echo "Manifest-Version: 1.0 " > manifest.txt 
