@@ -1,19 +1,17 @@
 package dao;
 
-import domain.Account;
-import services.DbContext;
-
-import services.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.DbContext;
+import services.Main;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 
-public class AccountDAO {
+public class AccountDaaAO {
     private static final Logger log = LogManager.getLogger(Main.class.getName());
 
-    public void addAccount(Account account) {
+    public void addAccount(domain.Account account) {
         String table = "Accounts";
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd") {
             {
@@ -25,7 +23,7 @@ public class AccountDAO {
         log.info("Добавлен аккаунт {} в бд", account.id);
     }
 
-    Account selectAccount(int accountId) {
+    public domain.Account selectAccount(int accountId) {
         String table = "Accounts";
         String params = "ID, RESOURCEID, VOL, DS, DE";
         String filter = "where ID = " + accountId;
@@ -33,7 +31,7 @@ public class AccountDAO {
 
         try {
             selected.next();
-            return new Account(
+            return new domain.Account(
                     selected.getInt(1),
                     selected.getInt(2),
                     selected.getInt(3),

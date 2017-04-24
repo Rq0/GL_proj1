@@ -1,9 +1,9 @@
 package services;
 
+import dao.AccountDAO;
 import dao.ResourceDAO;
 import dao.UserDAO;
 import domain.User;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,16 +55,16 @@ public class AAAService {
         System.exit(1);
         return -1;
     }
-
-    private String addSalt() {
-        log.info("Добавляем salt");
-        return RandomStringUtils.randomAscii(8);
-    }
-
-    private String addHash(String password, String salt) {
-        log.info("Добавляем hash");
-        return md5Hex(md5Hex(password) + salt);
-    }
+//
+//    private String addSalt() {
+//        log.info("Добавляем salt");
+//        return RandomStringUtils.randomAscii(8);
+//    }
+//
+//    private String addHash(String password, String salt) {
+//        log.info("Добавляем hash");
+//        return md5Hex(md5Hex(password) + salt);
+//    }
 
     boolean checkPass(domain.UserInput userInput) {
         int count = new DbContext().count("USERS") + 1;
@@ -121,7 +121,7 @@ public class AAAService {
                         newDate.parse(userInput.ds),
                         newDate.parse(userInput.de));
 
-                dao.AccountDAO accountDAO = new dao.AccountDAO();
+                AccountDAO accountDAO = new AccountDAO();
                 accountDAO.addAccount(account);
             } catch (Exception e) {
                 log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login, e.getMessage());
