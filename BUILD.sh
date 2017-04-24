@@ -1,6 +1,6 @@
 ﻿#!/bin/bash
 mkdir bin #
-javac -encoding utf8 -cp "./libs/*" -d "./bin" -sourcepath src/ #
+javac -encoding utf8 -cp "./libs/*" -d "./bin" -sourcepath src/ src/domain/*.java src/dao/*.java src/services/*.java #
 cp -R -v ./resources/* ./bin #
 echo "Class good"
 touch manifest.txt 
