@@ -1,3 +1,8 @@
+package services;
+
+import dao.ResourceDAO;
+import dao.UserDAO;
+import domain.User;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,11 +11,10 @@ import java.text.SimpleDateFormat;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
-
-class AAAService {
+public class AAAService {
     private static final Logger log = LogManager.getLogger(Main.class.getName());
 
-    User getUser(int id) {
+    public User getUser(int id) {
         try {
             UserDAO userDAO = new UserDAO();
             return userDAO.selectUser(id);
@@ -21,31 +25,7 @@ class AAAService {
         return null;
     }
 
-    String getUsers() {
-        StringBuilder out = new StringBuilder();
-        int count = new DbContext().count("users") + 1;
-        for (int i = 1; i < count; i++) {
-            User user = getUser(i);
-            out.append(String.format("ID пользователя: %s; Логин: %s; Пароль: %s;\n", user.id, user.login, user.pass));
-        }
-        return out.toString();
-    }
-
-
-    String getResources() {
-        StringBuilder out = new StringBuilder();
-        ResourceDAO resourceDAO = new ResourceDAO();
-        int count = new DbContext().count("RESOURCES") + 1;
-        for (int i = 1; i < count; i++) {
-
-            Resource resource = resourceDAO.selectResource(i);
-
-            out.append(String.format("Ресурс: %s; Роль: %s; ID пользователя: %s; \n", resource.path, resource.role, resource.user.id));
-        }
-        return out.toString();
-    }
-
-    int getAccess(UserInput userInput) {
+    int getAccess(domain.UserInput userInput) {
         String[] masOfPath = userInput.res.split("\\."); //разбиваем путь по уровням
         String findPath = "";
         int userId = findUser(userInput);
@@ -63,18 +43,7 @@ class AAAService {
         return -1;
     }
 
-    String getAccounts() {
-        StringBuilder out = new StringBuilder();
-        AccountDAO accountDAO = new AccountDAO();
-        int count = new DbContext().count("ACCOUNTS") + 1;
-        for (int id = 1; id < count; id++) {
-            Account account1 = accountDAO.selectAccount(id);
-            out.append(String.format("ID ресурса: %s; дата начала: %s; дата окончания: %s; объем: %s; \n", account1.resourceId, account1.ds, account1.de, account1.vol));
-        }
-        return out.toString();
-    }
-
-    int findUser(UserInput userInput) {
+    int findUser(domain.UserInput userInput) {
         int count = new DbContext().count("USERS") + 1;
         for (int i = 1; i < count; i++) {
             if (userInput.login.equals(getUser(i).login)) {
@@ -97,7 +66,7 @@ class AAAService {
         return md5Hex(md5Hex(password) + salt);
     }
 
-    boolean checkPass(UserInput userInput) {
+    boolean checkPass(domain.UserInput userInput) {
         int count = new DbContext().count("USERS") + 1;
         for (int i = 1; i < count; i++) {
             if (userInput.login.equals(getUser(i).login)) {
@@ -140,23 +109,22 @@ class AAAService {
         }
     }
 
-    boolean addAccount(UserInput userInput) {
+    boolean addAccount(domain.UserInput userInput) {
         log.info("Начат процесс добавления аккаунта");
         if (isDateValid(userInput.ds, userInput.de) && isVolValid(userInput.vol)) {
             SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                Account account = new Account(
+                domain.Account account = new domain.Account(
                         new DbContext().count("ACCOUNTS") + 1,
                         getAccess(userInput),
                         Integer.parseInt(userInput.vol),
                         newDate.parse(userInput.ds),
                         newDate.parse(userInput.de));
 
-                AccountDAO accountDAO = new AccountDAO();
+                dao.AccountDAO accountDAO = new dao.AccountDAO();
                 accountDAO.addAccount(account);
             } catch (Exception e) {
                 log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login, e.getMessage());
-                System.exit(434);
             }
             return true;
         } else {

@@ -1,6 +1,6 @@
 ﻿#!/bin/bash
 mkdir bin #
-javac -encoding windows-1251 -cp "./libs/*" -d "./bin" src/*.java #
+javac -encoding utf-8 -cp "./libs/*" -d "./bin" src/*.java #
 cp -R -v ./resources/* ./bin #
 echo "Class good"
 touch manifest.txt 

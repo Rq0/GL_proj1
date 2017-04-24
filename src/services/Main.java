@@ -1,8 +1,10 @@
-import org.apache.commons.cli.ParseException;
+package services;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
+
 
 
 public class Main {
@@ -11,26 +13,12 @@ public class Main {
     public static void main(String args[]) {
         log.info("-------------------------------------------------------------");
         log.info("Приложение запущено");
-        AAAService aaaService;
-        aaaService = new AAAService();
-        Validator validator;
-        validator = new Validator();
+        Validator validator = new Validator();
 
         migration();
 
-        System.out.println(aaaService.getUsers());
-        System.out.println(aaaService.getResources());
+        validator.validate(args);
 
-        /*
-          Подавляю исключение здесь, потому что возможные исключения обрабатывается внутри класса Validator
-         */
-        try {
-            validator.validate(args, aaaService);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println(aaaService.getAccounts());
-        }
         log.info("Приложение закрыто");
     }
 

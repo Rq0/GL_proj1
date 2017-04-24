@@ -1,13 +1,19 @@
+package dao;
+
+import domain.Account;
+import services.DbContext;
+
+import services.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 
-class AccountDAO {
+public class AccountDAO {
     private static final Logger log = LogManager.getLogger(Main.class.getName());
 
-    void addAccount(Account account) {
+    public void addAccount(Account account) {
         String table = "Accounts";
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd") {
             {
@@ -35,7 +41,6 @@ class AccountDAO {
                     selected.getDate(5));
         } catch (Exception e) {
             log.error("SelectAccount {} error; {}", accountId, e.getMessage());
-            System.exit(4042);
         }
         return null;
     }

@@ -1,9 +1,11 @@
+package services;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 
-class DbContext {
+public class DbContext {
 
 
     private PreparedStatement getStatement() {
@@ -20,7 +22,7 @@ class DbContext {
 
     private static final Logger log = LogManager.getLogger(Main.class.getName());
 
-    DbContext() {
+    public DbContext() {
 
     }
 
@@ -34,7 +36,6 @@ class DbContext {
             connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
         } catch (Exception e) {
             log.fatal("Не соединились с бд: {}", e.getMessage());
-            System.exit(434);
         }
     }
 
@@ -51,7 +52,7 @@ class DbContext {
         }
     }
 
-    void insert(String tableName, String values) {
+    public void insert(String tableName, String values) {
         connect();
         String sqlInsertQuery = String.format("insert into %s values (%s)", tableName, values);
         try {
@@ -64,7 +65,7 @@ class DbContext {
         }
     }
 
-    ResultSet select(String tableName, String values, String filter) {
+    public ResultSet select(String tableName, String values, String filter) {
         connect();
         String sqlSelectQuery = String.format("Select %s From %s %s ", values, tableName, filter);
         ResultSet selected;
@@ -81,7 +82,7 @@ class DbContext {
 
     int count(String tableName) {
         connect();
-        String sqlSelectQuery = String.format("Select count(id) From %s", tableName);
+        String sqlSelectQuery = String.format("Select max(id) From %s", tableName);
 
         try {
             ResultSet resultSet = getConnection().prepareStatement(sqlSelectQuery).executeQuery();

@@ -1,11 +1,19 @@
+package dao;
+
+import domain.Resource;
+import domain.Role;
+import domain.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.AAAService;
+import services.DbContext;
+import services.Main;
 
 import java.sql.ResultSet;
 
-class ResourceDAO {
+public class ResourceDAO {
     private static final Logger log = LogManager.getLogger(Main.class.getName());
-    private String table = "Resources";
+    private final String table = "Resources";
 
     void addResource(String path, User user, Role role, DbContext dbContext) {
 
@@ -14,7 +22,7 @@ class ResourceDAO {
         log.info("Добавлен ресурс {} для {} в бд", path, user.id);
     }
 
-    boolean haveAccess(String path, Role role, int userId) {
+    public boolean haveAccess(String path, Role role, int userId) {
         ResultSet result = new DbContext().select(table, "*", String.format(
                 "where path like '%s' " +
                         "and role like '%s' " +
@@ -29,7 +37,7 @@ class ResourceDAO {
         return false;
     }
 
-    Resource getResource(String path, int userId) {
+    public Resource getResource(String path, int userId) {
         ResultSet result = new DbContext().select(table, "*", String.format(
                 "where path like '%s' " +
                         "and userid like %s ", path, userId));
@@ -44,7 +52,7 @@ class ResourceDAO {
         } catch (Exception e) {
             log.error("Не прошло определение доступа к ресурсу {}; {} ", path, e.getMessage());
         }
-        return new Resource();
+        return null;
     }
 
     Resource selectResource(int id) {

@@ -1,14 +1,17 @@
+package services;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import domain.UserInput;
 
 class Validator {
 
     private CommandLine line;
     private static final Logger log = LogManager.getLogger(Main.class.getName());
 
-    void validate(String[] args, AAAService aaaService) throws ParseException {
+    void validate(String[] args) {
         UserInput userInput = new UserInput();
+        AAAService aaaService = new AAAService();
 
         Options options = new Options();
         options.addOption("login", "login", true, "Логин пользователя");
@@ -43,19 +46,19 @@ class Validator {
     }
 
 
-    private boolean isAccounting(AAAService aaaService, UserInput userInput) {
+    private void isAccounting(AAAService aaaService, UserInput userInput) {
         userInput.vol = line.getOptionValue("vol");
         userInput.ds = line.getOptionValue("ds");
         userInput.de = line.getOptionValue("de");
 
-        return aaaService.addAccount(userInput);
+        aaaService.addAccount(userInput);
     }
 
     private boolean isAuthorisation(AAAService aaaService, UserInput userInput) {
         userInput.res = line.getOptionValue("res");
 
         try {
-            userInput.role = Role.valueOf(line.getOptionValue("role"));
+            userInput.role = domain.Role.valueOf(line.getOptionValue("role"));
         } catch (Exception e) {
             System.exit(3);
         }
