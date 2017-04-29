@@ -7,12 +7,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.AAAService;
 import services.DbContext;
-import services.Main;
 
 import java.sql.ResultSet;
 
 public class ResourceDAO {
-    private static final Logger log = LogManager.getLogger(Main.class.getName());
+    private static final Logger log = LogManager.getLogger();
     private final String table = "Resources";
 
     void addResource(String path, User user, Role role, DbContext dbContext) {
@@ -32,7 +31,7 @@ public class ResourceDAO {
                 return true;
             }
         } catch (Exception e) {
-            log.fatal("Серьезное че-то с доступом; {}", e.getMessage());
+            log.fatal("Серьезное че-то с доступом;");
         }
         return false;
     }
@@ -50,7 +49,7 @@ public class ResourceDAO {
                         Role.valueOf(result.getString(4)));
             }
         } catch (Exception e) {
-            log.error("Не прошло определение доступа к ресурсу {}; {} ", path, e.getMessage());
+            log.error("Не прошло определение доступа к ресурсу {}", path);
         }
         return null;
     }
@@ -68,7 +67,7 @@ public class ResourceDAO {
                     userDAO.selectUser(selected.getInt(3)),
                     Role.valueOf(selected.getString(4)));
         } catch (Exception e) {
-            log.error("SelectResource {} error; {}", id, e.getMessage());
+            log.error("SelectResource {} error", id);
         }
         return null;
     }

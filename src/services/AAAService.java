@@ -4,6 +4,7 @@ import dao.AccountDAO;
 import dao.ResourceDAO;
 import dao.UserDAO;
 import domain.User;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,23 +13,21 @@ import java.text.SimpleDateFormat;
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 public class AAAService {
-    private static final Logger log = LogManager.getLogger(Main.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     public User getUser(int id) {
         try {
-            UserDAO userDAO = new UserDAO();
-            return userDAO.selectUser(id);
+            return new UserDAO().selectUser(id);
         } catch (Exception e) {
-            log.fatal("Пользователя с id - {} не найден", id);
-            System.exit(401);
+            log.warn("Пользователя с id - {} не найден", id);
         }
         return null;
     }
 
-    int getAccess(domain.UserInput userInput) {
+    Integer getAccess(domain.UserInput userInput) {
         String[] masOfPath = userInput.res.split("\\."); //разбиваем путь по уровням
         String findPath = "";
-        int userId = findUser(userInput);
+        Integer userId = findUser(userInput);
         try {
             for (String string : masOfPath) {
                 findPath += string; //опускаемся на уровень ниже
@@ -37,44 +36,40 @@ public class AAAService {
                 }
             }
         } catch (NullPointerException e) {
-            log.fatal("Нет доступа для {}; {}", userInput.login);
+            log.warn("Нет доступа для {}", userInput.login);
         }
         System.exit(4);
-        return -1;
+        return null;
     }
 
-    int findUser(domain.UserInput userInput) {
-        int count = new DbContext().count("USERS") + 1;
-        for (int i = 1; i < count; i++) {
-            if (userInput.login.equals(getUser(i).login)) {
-                log.info("Пользователь {} найден", userInput.login);
-                return i;
-            }
+    Integer findUser(domain.UserInput userInput) {
+        int id;
+        try {
+            id = new UserDAO().selectUserByLogin(userInput.login).id;
+            log.info("Пользователь {} найден", userInput.login);
+            return id;
+        } catch (Exception e) {
+            log.warn("Пользователь {} не найден в бд", userInput.login);
+            System.exit(1);
+            return null;
         }
-        log.warn("Пользователь {} не найден в бд", userInput.login);
-        System.exit(1);
-        return -1;
     }
-//
-//    private String addSalt() {
-//        log.info("Добавляем salt");
-//        return RandomStringUtils.randomAscii(8);
-//    }
-//
-//    private String addHash(String password, String salt) {
-//        log.info("Добавляем hash");
-//        return md5Hex(md5Hex(password) + salt);
-//    }
+
+    private String addSalt() {
+        log.info("Добавляем salt");
+        return RandomStringUtils.randomAscii(8);
+    }
+
+    private String addHash(String password, String salt) {
+        log.info("Добавляем hash");
+        return md5Hex(md5Hex(password) + salt);
+    }
 
     boolean checkPass(domain.UserInput userInput) {
-        int count = new DbContext().count("USERS") + 1;
-        for (int i = 1; i < count; i++) {
-            if (userInput.login.equals(getUser(i).login)) {
-                if ((md5Hex(md5Hex(userInput.pass) + getUser(i).salt).equals(getUser(i).pass))) {
-                    log.info("Authentication complete {}", userInput.login);
-                    return true;
-                }
-            }
+        Integer userId = findUser(userInput);
+        if ((md5Hex(md5Hex(userInput.pass) + getUser(userId).salt).equals(getUser(userId).pass))) {
+            log.info("Authentication complete {}", userInput.login);
+            return true;
         }
         log.warn("Пароль для {} введен не правильно", userInput.login);
         System.exit(2);
@@ -91,7 +86,7 @@ public class AAAService {
             log.info("Даты валидны");
             return true;
         } catch (Exception e) {
-            log.warn("Unreachable date format", e.getMessage());
+            log.warn("Unreachable date format");
             System.exit(5);
             return false;
         }
@@ -103,7 +98,7 @@ public class AAAService {
             log.info("Объем валиден");
             return true;
         } catch (Exception e) {
-            log.warn("Unreachable volume format", e.getMessage());
+            log.warn("Unreachable volume format");
             System.exit(5);
             return false;
         }
@@ -115,7 +110,7 @@ public class AAAService {
             SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 domain.Account account = new domain.Account(
-                        new DbContext().count("ACCOUNTS") + 1,
+                        new AccountDAO().getLastAccountId(),
                         getAccess(userInput),
                         Integer.parseInt(userInput.vol),
                         newDate.parse(userInput.ds),
@@ -124,7 +119,7 @@ public class AAAService {
                 AccountDAO accountDAO = new AccountDAO();
                 accountDAO.addAccount(account);
             } catch (Exception e) {
-                log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login, e.getMessage());
+                log.fatal("Ошибка в добавлении аккаунта {}", userInput.login);
             }
             return true;
         } else {

@@ -1,10 +1,8 @@
-package services;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
-
+import services.Validator;
 
 
 public class Main {
@@ -31,7 +29,7 @@ public class Main {
             log.info("Миграция успешна");
         } catch (FlywayException e) {
             flyway.baseline();
-            log.warn("Миграция не прошла {}", e.getMessage());
+            log.warn("Миграция не прошла");
         }
     }
 

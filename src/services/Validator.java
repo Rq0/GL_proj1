@@ -1,17 +1,16 @@
 package services;
+import domain.UserInput;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import domain.UserInput;
 
-class Validator {
+public class Validator {
 
     private CommandLine line;
-    private static final Logger log = LogManager.getLogger(Main.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
-    void validate(String[] args) {
+    public void validate(String[] args) {
         UserInput userInput = new UserInput();
-        AAAService aaaService = new AAAService();
 
         Options options = new Options();
         options.addOption("login", "login", true, "Логин пользователя");
@@ -24,7 +23,7 @@ class Validator {
         options.addOption("h", "help", false, "Cправка");
 
         setLine(args, options);
-        lineOptions(options, aaaService, userInput);
+        lineOptions(options, userInput);
     }
 
     private void setLine(String[] args, Options options) {
@@ -34,7 +33,7 @@ class Validator {
             log.info("Параметры консоли спарсены");
         } catch (Exception e) {
             printHelp(options);
-            log.error("Параметры консоли не парсятся", e.getMessage());
+            log.error("Параметры консоли не парсятся");
         }
     }
 
@@ -46,15 +45,15 @@ class Validator {
     }
 
 
-    private void isAccounting(AAAService aaaService, UserInput userInput) {
+    private void isAccounting(UserInput userInput) {
         userInput.vol = line.getOptionValue("vol");
         userInput.ds = line.getOptionValue("ds");
         userInput.de = line.getOptionValue("de");
 
-        aaaService.addAccount(userInput);
+        new AAAService().addAccount(userInput);
     }
 
-    private boolean isAuthorisation(AAAService aaaService, UserInput userInput) {
+    private boolean isAuthorisation(UserInput userInput) {
         userInput.res = line.getOptionValue("res");
 
         try {
@@ -62,20 +61,21 @@ class Validator {
         } catch (Exception e) {
             System.exit(3);
         }
-        return ((aaaService.getAccess(userInput)) > -1);
+        Integer a = new AAAService().getAccess(userInput);
+        return (a!=null );
     }
 
-    private boolean isAuthentication(AAAService aaaService, UserInput userInput) {
+    private boolean isAuthentication(UserInput userInput) {
         userInput.login = line.getOptionValue("login");
-        aaaService.findUser(userInput);
-        if (line.hasOption("pass")) {
+        Integer userID = new AAAService().findUser(userInput);
+        if (line.hasOption("pass") && userID  !=null) {
             userInput.pass = line.getOptionValue("pass");
-            return aaaService.checkPass(userInput);
+            return new AAAService().checkPass(userInput);
         }
         return false;
     }
 
-    private void lineOptions(Options options, AAAService aaaService, UserInput userInput) {
+    private void lineOptions(Options options, UserInput userInput) {
 
         boolean authentication = false;
         boolean authorisation = false;
@@ -83,15 +83,15 @@ class Validator {
             printHelp(options);
         }
         if (line.hasOption("login")) {
-            authentication = isAuthentication(aaaService, userInput);
+            authentication = isAuthentication(userInput);
             log.info("Этап аутентификации прошел");
         }
         if (line.hasOption("res") && line.hasOption("role") && authentication) {
-            authorisation = isAuthorisation(aaaService, userInput);
+            authorisation = isAuthorisation(userInput);
             log.info("Этап авторизации прошел");
         }
         if (line.hasOption("ds") && line.hasOption("de") && line.hasOption("vol") && (authorisation)) {
-            isAccounting(aaaService, userInput);
+            isAccounting(userInput);
             log.info("Этап аккаунтинга прошел");
         }
     }

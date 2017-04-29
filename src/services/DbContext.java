@@ -20,7 +20,7 @@ public class DbContext {
 
     private Connection connection;
 
-    private static final Logger log = LogManager.getLogger(Main.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     public DbContext() {
 
@@ -28,14 +28,10 @@ public class DbContext {
 
     private void connect() {
         try {
-            /**
-             * Возможные варианты:
-             * //tcp://localhost/~/test
-             * ./GL_proj1
-             */
+
             connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
         } catch (Exception e) {
-            log.fatal("Не соединились с бд: {}", e.getMessage());
+            log.fatal("Не соединились с бд");
         }
     }
 
@@ -47,11 +43,9 @@ public class DbContext {
             getStatement().execute(sqlCreateQuery);
             log.info("Создана таблица бд");
         } catch (Exception e) {
-            log.error("Не смогли создать таблицу бд: {}", e.getMessage());
-            System.exit(10);
+            log.error("Не смогли создать таблицу бд");
         }
     }
-
     public void insert(String tableName, String values) {
         connect();
         String sqlInsertQuery = String.format("insert into %s values (%s)", tableName, values);
@@ -60,8 +54,7 @@ public class DbContext {
             // getStatement().execute(sqlInsertQuery);
             log.info("Прошла вставка в бд");
         } catch (Exception e) {
-            log.error("Не прошла вставка в бд: {}", e.getMessage());
-            System.exit(11);
+            log.error("Не прошла вставка в бд");
         }
     }
 
@@ -74,8 +67,7 @@ public class DbContext {
             return selected;
 
         } catch (Exception e) {
-            log.error("Не прошла выборка:{}, ошибка: {}", sqlSelectQuery, e.getMessage());
-            System.exit(404);
+            log.error("Не прошла выборка:{}", sqlSelectQuery);
         }
         return null;
     }
@@ -89,7 +81,7 @@ public class DbContext {
             resultSet.last();
             return resultSet.getInt(1);
         } catch (Exception e) {
-            log.error("Не удалось подсчитать количество строк в таблице {}; {}", tableName, e.getMessage());
+            log.error("Не удалось подсчитать количество строк в таблице {}", tableName);
         }
         return 1;
     }
@@ -100,7 +92,7 @@ public class DbContext {
             connection.close();
 
         } catch (SQLException e) {
-            log.error("не закрылось, {}", e.getMessage());
+            log.error("не закрылось");
         }
     }
 }
