@@ -1,4 +1,4 @@
-package domain;
+package main.java.domains;
 
 public class Resource {
     public Integer id;

@@ -1,8 +1,8 @@
+import main.java.services.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
-import services.Validator;
 
 
 public class Main {

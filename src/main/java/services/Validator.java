@@ -1,5 +1,6 @@
-package services;
-import domain.UserInput;
+package main.java.services;
+import main.java.domains.Role;
+import main.java.domains.UserInput;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,7 +58,7 @@ public class Validator {
         userInput.res = line.getOptionValue("res");
 
         try {
-            userInput.role = domain.Role.valueOf(line.getOptionValue("role"));
+            userInput.role = Role.valueOf(line.getOptionValue("role"));
         } catch (Exception e) {
             System.exit(3);
         }

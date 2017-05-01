@@ -1,8 +1,9 @@
-package dao;
+package main.java.dao;
 
+import main.java.domains.Account;
+import main.java.services.DbContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.DbContext;
 
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
@@ -13,7 +14,7 @@ public class AccountDAO {
     private String table = "Accounts";
 
 
-    public void addAccount(domain.Account account) {
+    public void addAccount(Account account) {
         SimpleDateFormat newDate = new SimpleDateFormat("yyyy-MM-dd") {
             {
                 setLenient(false);
@@ -24,13 +25,16 @@ public class AccountDAO {
         log.info("Добавлен аккаунт {} в бд", account.id);
     }
 
-    public Integer getLastAccountId(){
+    public Integer getLastAccountId() {
 
         ResultSet selected = new DbContext().select(table, "Max(ID)", "");
         try {
             selected.next();
             selected.getInt(1);
-            return selected.getInt(1)+1;
+            Integer id = selected.getInt(1) + 1;
+            return id;
+        } catch (NullPointerException e) {
+            log.fatal("NPE в добавлении аккаунта");
         } catch (Exception e) {
             log.error("GetLastAccountID error; {}");
         }

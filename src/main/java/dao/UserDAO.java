@@ -1,9 +1,9 @@
-package dao;
+package main.java.dao;
 
-import domain.User;
+import main.java.domains.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.DbContext;
+import main.java.services.DbContext;
 
 import java.sql.ResultSet;
 
@@ -13,7 +13,7 @@ public class UserDAO {
     void addUser(int id, String login, String pass, String salt) {
 
         String paramsValues = String.format("%s,'%s', '%s','%s'", id, login, pass, salt);
-        new services.DbContext().insert(table, paramsValues);
+        new DbContext().insert(table, paramsValues);
         log.info("Добавлен пользователь {} в бд", id);
     }
 
@@ -21,13 +21,13 @@ public class UserDAO {
 
         String params = "ID,LOGIN, PASS, SALT  ";
         String filter = "where id = " + userId;
-        ResultSet selected = new services.DbContext().select(table, params, filter);
+        ResultSet selected = new DbContext().select(table, params, filter);
 
         try {
             selected.getMetaData().getColumnCount();
             selected.next();
             log.info("Выборка пользователя из бд");
-            return new domain.User(
+            return new User(
                     selected.getInt(1),
                     selected.getString(2),
                     selected.getString(3),
@@ -41,14 +41,15 @@ public class UserDAO {
     public User selectUserByLogin(String login) {
 
         String params = "ID,LOGIN, PASS, SALT  ";
-        String filter = "where login = " + login;
-        ResultSet selected = new services.DbContext().select(table, params, filter);
+
+        String filter = String.format("where login = '%s' ",login);
+        ResultSet selected = new DbContext().select(table, params, filter);
 
         try {
             selected.getMetaData().getColumnCount();
             selected.next();
             log.info("Выборка пользователя из бд");
-            return new domain.User(
+            return new User(
                     selected.getInt(1),
                     selected.getString(2),
                     selected.getString(3),

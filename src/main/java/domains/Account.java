@@ -1,10 +1,9 @@
-package domain;
+package main.java.domains;
 
 import java.util.Date;
 
 /**
- * Класс аккантов
- * Created by rq0 on 10.03.2017.
+ * Created by rq0 on 01.05.2017.
  */
 public class Account {
     public final Integer id;
@@ -20,6 +19,4 @@ public class Account {
         this.ds = ds;
         this.de = de;
     }
-
-
 }

@@ -1,4 +1,4 @@
-package domain;
+package main.java.domains;
 
 public class User {
     public final String login;

@@ -1,12 +1,12 @@
-package dao;
+package main.java.dao;
 
-import domain.Resource;
-import domain.Role;
-import domain.User;
+import main.java.domains.Role;
+import main.java.services.AAAService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.AAAService;
-import services.DbContext;
+import main.java.domains.Resource;
+import main.java.domains.User;
+import main.java.services.DbContext;
 
 import java.sql.ResultSet;
 
