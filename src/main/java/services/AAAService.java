@@ -14,10 +14,6 @@ import java.util.Date;
 
 import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
-
-/**
- * Created by rq0 on 01.05.2017.
- */
 public class AAAService {
 
     private static final Logger log = LogManager.getLogger();
@@ -105,6 +101,7 @@ public class AAAService {
 
     private boolean isVolValid(String vol) {
         try {
+            Integer volume = Integer.parseInt(vol);
             log.info("Объем валиден");
             return true;
         } catch (Exception e) {
@@ -134,7 +131,6 @@ public class AAAService {
                     date2);
             AccountDAO accountDAO = new AccountDAO();
             accountDAO.addAccount(account);
-
 
             return true;
         } else {

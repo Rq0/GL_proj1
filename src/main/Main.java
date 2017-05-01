@@ -1,3 +1,5 @@
+package main;
+
 import main.java.services.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
