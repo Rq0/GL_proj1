@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by rq0 on 01.05.2017.
  */
 public class Account {
-    public final Integer id;
+    public Integer id;
     public final Integer resourceId;
     public final Integer vol;
     public final Date ds;

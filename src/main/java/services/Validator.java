@@ -35,7 +35,7 @@ public class Validator {
             log.info("Параметры консоли спарсены");
         } catch (Exception e) {
             printHelp(options);
-            log.error("Параметры консоли не парсятся");
+            log.error("Параметры консоли не парсятся", e);
         }
     }
 

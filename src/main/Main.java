@@ -31,7 +31,7 @@ public class Main {
             log.info("Миграция успешна");
         } catch (FlywayException e) {
             flyway.baseline();
-            log.warn("Миграция не прошла");
+            log.warn("Миграция не прошла", e);
         }
     }
 

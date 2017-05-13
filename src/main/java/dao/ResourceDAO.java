@@ -29,7 +29,7 @@ public class ResourceDAO {
                 return true;
             }
         } catch (Exception e) {
-            log.fatal("Серьезное че-то с доступом;");
+            log.fatal("Серьезное че-то с доступом;", e);
         }
         return false;
     }
@@ -52,7 +52,7 @@ public class ResourceDAO {
                         Role.valueOf(selected.getString(4)));
             }
         } catch (Exception e) {
-            log.error("Не прошло определение доступа к ресурсу {}", path);
+            log.error("Не прошло определение доступа к ресурсу {}", path, e);
         }
         return null;
     }

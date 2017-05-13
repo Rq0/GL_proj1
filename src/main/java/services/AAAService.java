@@ -23,7 +23,7 @@ public class AAAService {
         try {
             return new UserDAO().selectUserById(id);
         } catch (Exception e) {
-            log.warn("Пользователя с id - {} не найден", id);
+            log.warn("Пользователя с id - {} не найден", id, e);
         }
         return null;
     }
@@ -40,7 +40,7 @@ public class AAAService {
                 }
             }
         } catch (NullPointerException e) {
-            log.warn("Нет доступа для {}", userInput.login);
+            log.warn("Нет доступа для {}", userInput.login, e);
         }
         System.exit(4);
         return null;
@@ -53,7 +53,7 @@ public class AAAService {
             log.info("Пользователь {} найден", userInput.login);
             return id;
         } catch (Exception e) {
-            log.warn("Пользователь {} не найден в бд", userInput.login);
+            log.warn("Пользователь {} не найден в бд", userInput.login, e);
             System.exit(1);
             return null;
         }
@@ -90,7 +90,7 @@ public class AAAService {
             log.info("Даты валидны");
             return true;
         } catch (Exception e) {
-            log.warn("Unreachable date format");
+            log.warn("Unreachable date format", e);
             System.exit(5);
             return false;
         }
@@ -102,7 +102,7 @@ public class AAAService {
             log.info("Объем валиден");
             return true;
         } catch (Exception e) {
-            log.warn("Unreachable volume format");
+            log.warn("Unreachable volume format", e);
             System.exit(5);
             return false;
         }
@@ -118,7 +118,7 @@ public class AAAService {
                 date1 = newDate.parse(userInput.ds);
                 date2 = newDate.parse(userInput.de);
             } catch (Exception e) {
-                log.fatal("Ошибка в добавлении аккаунта {} {}", userInput.login, e.getMessage());
+                log.fatal("Ошибка в добавлении аккаунта {}; {}", userInput.login, e);
             }
             Account account = new Account(
                     new AccountDAO().getLastAccountId(),

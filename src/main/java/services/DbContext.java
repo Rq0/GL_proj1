@@ -30,10 +30,9 @@ public class DbContext {
 
     public void connect() {
         try {
-
             connection = DriverManager.getConnection("jdbc:h2:./GL_proj1", "sa", "");
         } catch (Exception e) {
-            log.fatal("Не соединились с бд");
+            log.fatal("Не соединились с бд", e);
         }
     }
 }
