@@ -6,6 +6,7 @@ import main.java.dao.UserDAO;
 import main.java.domains.Account;
 import main.java.domains.User;
 import main.java.domains.UserInput;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +21,7 @@ public class AAAService {
 
     public User getUser(int id) {
         try {
-            return new UserDAO().selectUser(id);
+            return new UserDAO().selectUserById(id);
         } catch (Exception e) {
             log.warn("Пользователя с id - {} не найден", id);
         }
@@ -58,19 +59,15 @@ public class AAAService {
         }
     }
 
-// --Commented out by Inspection START (01.05.2017 16:51):
-//    private String addSalt() {
-//        log.info("Добавляем salt");
-//        return RandomStringUtils.randomAscii(8);
-//    }
-// --Commented out by Inspection STOP (01.05.2017 16:51)
+    private String addSalt() {
+        log.info("Добавляем salt");
+        return RandomStringUtils.randomAscii(8);
+    }
 
-// --Commented out by Inspection START (01.05.2017 16:51):
-//    private String addHash(String password, String salt) {
-//        log.info("Добавляем hash");
-//        return md5Hex(md5Hex(password) + salt);
-//    }
-// --Commented out by Inspection STOP (01.05.2017 16:51)
+    private String addHash(String password, String salt) {
+        log.info("Добавляем hash");
+        return md5Hex(md5Hex(password) + salt);
+    }
 
     boolean checkPass(UserInput userInput) {
         Integer userId = findUser(userInput);
@@ -101,7 +98,7 @@ public class AAAService {
 
     private boolean isVolValid(String vol) {
         try {
-            Integer volume = Integer.parseInt(vol);
+            Integer.parseInt(vol);
             log.info("Объем валиден");
             return true;
         } catch (Exception e) {
@@ -131,7 +128,6 @@ public class AAAService {
                     date2);
             AccountDAO accountDAO = new AccountDAO();
             accountDAO.addAccount(account);
-
             return true;
         } else {
             log.warn("Один из параметров аккаунта {} не валиден", userInput.login);

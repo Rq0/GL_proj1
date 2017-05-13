@@ -1,4 +1,5 @@
 package main.java.services;
+
 import main.java.domains.Role;
 import main.java.domains.UserInput;
 import org.apache.commons.cli.*;
@@ -63,13 +64,13 @@ public class Validator {
             System.exit(3);
         }
         Integer a = new AAAService().getAccess(userInput);
-        return (a!=null );
+        return (a != null);
     }
 
     private boolean isAuthentication(UserInput userInput) {
         userInput.login = line.getOptionValue("login");
         Integer userID = new AAAService().findUser(userInput);
-        if (line.hasOption("pass") && userID  !=null) {
+        if (line.hasOption("pass") && userID != null) {
             userInput.pass = line.getOptionValue("pass");
             return new AAAService().checkPass(userInput);
         }
