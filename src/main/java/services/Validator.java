@@ -33,7 +33,7 @@ public class Validator {
         try {
             line = parser.parse(options, args);
             log.info("Параметры консоли спарсены");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             printHelp(options);
             log.error("Параметры консоли не парсятся", e);
         }
@@ -60,7 +60,8 @@ public class Validator {
 
         try {
             userInput.role = Role.valueOf(line.getOptionValue("role"));
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            log.warn("Несуществующая роль;", e);
             System.exit(3);
         }
         Integer a = new AAAService().getAccess(userInput);
