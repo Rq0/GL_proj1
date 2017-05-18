@@ -1,4 +1,7 @@
-## **Cli приложение для GoodLine(меня, если честно)**  [![Build Status](https://travis-ci.org/Rq0/GL_proj1.svg?branch=master)](https://travis-ci.org/Rq0/GL_proj1)  
+## **Кафедра Software Engeegering на базе GoodLine**  [![Build Status](https://travis-ci.org/Rq0/GL_proj1.svg?branch=master)](https://travis-ci.org/Rq0/GL_proj1)  
+
+**Приложение для аутентификации, авторизации, аккаунтинга на java;**
+
 [GitHub Pages](https://rq0.github.io/GL_proj1/)  
 Первый набор требований [ROADMAP1](ROADMAP.md)  
 Второй набор требований [ROADMAP2](ROADMAP2.md)  
