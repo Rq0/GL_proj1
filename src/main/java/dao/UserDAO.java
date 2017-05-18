@@ -30,8 +30,8 @@ public class UserDAO {
                         selected.getString(3),
                         selected.getString(4));
             }
-        } catch (Exception e) {
-            log.error("SelectUser {} error;", userId, e);
+        } catch (Throwable e) {
+            log.error("SelectUser error;", e);
         }
         return null;
     }
@@ -54,8 +54,8 @@ public class UserDAO {
                         selected.getString(3),
                         selected.getString(4));
             }
-        } catch (Exception e) {
-            log.error("SelectUserByLogin {} error ;", login, e);
+        } catch (Throwable e) {
+            log.error("SelectUserByLogin error;", e);
         }
         return null;
     }

@@ -51,8 +51,8 @@ public class ResourceDAO {
                         new AAAService().getUser(selected.getInt(1)),
                         Role.valueOf(selected.getString(4)));
             }
-        } catch (Exception e) {
-            log.error("Не прошло определение доступа к ресурсу {}", path, e);
+        } catch (Throwable e) {
+            log.error("Не прошло определение доступа к ресурсу", e);
         }
         return null;
     }
