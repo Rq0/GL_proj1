@@ -22,7 +22,7 @@ public class AAAService {
     public User getUser(int id) {
         try {
             return new UserDAO().selectUserById(id);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.warn("Пользователя не найден", e);
         }
         return null;
@@ -39,8 +39,8 @@ public class AAAService {
                     return (new ResourceDAO().getResource(userInput.res, userId)).id;
                 }
             }
-        } catch (Throwable e) {
-            log.warn("Нет доступа для {}", userInput.login, e);
+        } catch (Exception e) {
+            log.warn("Нет доступа ", e);
         }
         System.exit(4);
         return null;
@@ -52,7 +52,7 @@ public class AAAService {
             id = new UserDAO().selectUserByLogin(userInput.login).id;
             log.info("Пользователь {} найден", userInput.login);
             return id;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.warn("Пользователь не найден в бд", e);
             System.exit(1);
             return null;
@@ -89,7 +89,7 @@ public class AAAService {
             newDate.parse(de);
             log.info("Даты валидны");
             return true;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.warn("Unreachable date format", e);
             System.exit(5);
             return false;
@@ -101,7 +101,7 @@ public class AAAService {
             Integer.parseInt(vol);
             log.info("Объем валиден");
             return true;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.warn("Unreachable volume format", e);
             System.exit(5);
             return false;
@@ -117,7 +117,7 @@ public class AAAService {
             try {
                 date1 = newDate.parse(userInput.ds);
                 date2 = newDate.parse(userInput.de);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 log.fatal("Ошибка в добавлении аккаунта; {}", e);
             }
             Account account = new Account(

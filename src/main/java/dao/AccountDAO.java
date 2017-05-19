@@ -30,7 +30,7 @@ public class AccountDAO {
                 account.id = generatedKeys.getInt(1);
                 log.info("Добавлен аккаунт {} в бд", account.id);
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.fatal("Не прошла вставка аккаунта в бд", e);
         }
     }
@@ -46,12 +46,14 @@ public class AccountDAO {
             selected = preparedStatement.executeQuery();
             if (selected.next()) {
                 selected.getInt(1);
-                Integer id = selected.getInt(1) + 1;
-                return id;
+                return selected.getInt(1) + 1;
             }
-        } catch (Throwable e) {
+        } catch (NullPointerException e) {
+            log.fatal("NPE в добавлении аккаунта", e);
+        } catch (Exception e) {
             log.error("GetLastAccountID error;", e);
         }
         return null;
+
     }
 }

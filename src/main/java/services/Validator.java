@@ -33,7 +33,7 @@ public class Validator {
         try {
             line = parser.parse(options, args);
             log.info("Параметры консоли спарсены");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             printHelp(options);
             log.error("Параметры консоли не парсятся", e);
         }
@@ -60,7 +60,7 @@ public class Validator {
 
         try {
             userInput.role = Role.valueOf(line.getOptionValue("role"));
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.warn("Несуществующая роль;", e);
             System.exit(3);
         }
